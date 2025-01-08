@@ -55,8 +55,6 @@ public class AuthService {
 	public LoginResponseDto authenticate(LoginRequestDto requestDto) {
 		User findUser = userService.getUserByEmail(requestDto.email());
 
-		findUser.validateIsDeleted();
-
 		if (passwordEncoder.matches(requestDto.password(), findUser.getPassword()) == false) {
 			throw new AuthenticationException(INVALID_CREDENTIALS);
 		}
