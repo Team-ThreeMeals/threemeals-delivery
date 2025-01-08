@@ -38,7 +38,8 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok")
 
     // DB connector
-    runtimeOnly("mysql:mysql-connector-java:8.0.34")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+    runtimeOnly("mysql:mysql-connector-java:8.0.32")
 
     // JPA
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -53,9 +54,6 @@ dependencies {
     testAnnotationProcessor("com.querydsl:querydsl-apt:5.1.0:jakarta")
     testAnnotationProcessor("jakarta.annotation:jakarta.annotation-api")
     testAnnotationProcessor("jakarta.persistence:jakarta.persistence-api")
-
-    // Redis
-    implementation ("org.springframework.boot:spring-boot-starter-data-redis")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
