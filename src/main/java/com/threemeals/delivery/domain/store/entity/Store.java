@@ -1,6 +1,5 @@
 package com.threemeals.delivery.domain.store.entity;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
