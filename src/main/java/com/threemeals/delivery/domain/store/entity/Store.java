@@ -1,6 +1,7 @@
 package com.threemeals.delivery.domain.store.entity;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -47,10 +48,10 @@ public class Store extends BaseEntity {
 	private String address;
 
 	@Column(name = "opening_time", nullable = false)
-	private LocalDateTime openingTime;
+	private LocalTime openingTime;
 
 	@Column(name = "closing_time", nullable = false)
-	private LocalDateTime closingTime;
+	private LocalTime  closingTime;
 
 	@Column(name = "is_closed")
 	private Boolean isClosed;
