@@ -29,7 +29,6 @@ public class UserService {
 	public UserResponseDto updateUser(Long userId, UpdateUserRequestDto requestDto) {
 
 		User findUser = getUserById(userId);
-		findUser.validateIsDeleted();
 
 		String encodedPassword = passwordEncoder.encode(requestDto.password());
 		findUser.updateMe(requestDto, encodedPassword);
@@ -41,7 +40,6 @@ public class UserService {
 	public void deleteUser(Long userId, DeleteUserRequestDto requestDto) {
 
 		User findUser = getUserById(userId);
-		findUser.validateIsDeleted();
 
 		if (passwordEncoder.matches(requestDto.confirmPassword(), findUser.getPassword()) == false) {
 			throw new AuthenticationException(INVALID_CREDENTIALS);
@@ -51,13 +49,27 @@ public class UserService {
 	}
 
 	public User getUserById(Long userId) {
-		return userRepository.findById(userId)
+		User findUser = userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+
+		findUser.validateIsDeleted();
+		return findUser;
 	}
 
 	public User getUserByEmail(String email) {
-		return userRepository.findByEmail(email)
+		User findUser = userRepository.findByEmail(email)
 			.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+
+		findUser.validateIsDeleted();
+		return findUser;
+	}
+
+	public User getOwnerById(Long ownerId) {
+		User findOwner = userRepository.findById(ownerId)
+			.orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+
+		findOwner.validateIsOwner();
+		return findOwner;
 	}
 
 	public void validateEmailAvailability(String email) {

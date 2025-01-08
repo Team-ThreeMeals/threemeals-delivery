@@ -1,6 +1,7 @@
 package com.threemeals.delivery.domain.user.entity;
 
 import com.threemeals.delivery.domain.common.entity.BaseEntity;
+import com.threemeals.delivery.domain.common.exception.AccessDeniedException;
 import com.threemeals.delivery.domain.user.dto.request.UpdateUserRequestDto;
 import com.threemeals.delivery.domain.user.exception.DeletedUserException;
 
@@ -72,6 +73,13 @@ public class User extends BaseEntity {
 
 	public void deleteMe() {
 		isDeleted = true;
+	}
+
+	public void validateIsOwner() {
+		validateIsDeleted();
+		if (role != Role.STORE_OWNER) {
+			throw new AccessDeniedException();
+		}
 	}
 
 }
