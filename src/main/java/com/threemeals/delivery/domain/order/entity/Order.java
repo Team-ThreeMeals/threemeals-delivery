@@ -1,29 +1,16 @@
 package com.threemeals.delivery.domain.order.entity;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.threemeals.delivery.domain.common.entity.BaseEntity;
-import com.threemeals.delivery.domain.menu.entity.OrderStatus;
 import com.threemeals.delivery.domain.store.entity.Store;
 import com.threemeals.delivery.domain.user.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -44,8 +31,8 @@ public class Order extends BaseEntity {
 	private Store store;
 
 	@Column(name = "status", nullable = false)
-	@Enumerated(value = EnumType.ORDINAL) // String으로 할지 선택
-	private OrderStatus orderStatus;
+	@Enumerated(EnumType.STRING)
+	private OrderStatus status;
 
 	@Column(name = "total_price", nullable = false)
 	private Integer totalPrice;
@@ -53,4 +40,23 @@ public class Order extends BaseEntity {
 	@Column(name = "delivery_address", nullable = false)
 	private String deliveryAddress;
 
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<OrderItem> orderItems = new ArrayList<>();
+
+	@Builder
+	public Order(User user, Store store, OrderStatus status, Integer totalPrice, String deliveryAddress) {
+		this.user = user;
+		this.store = store;
+		this.status = status;
+		this.totalPrice = totalPrice;
+		this.deliveryAddress = deliveryAddress;
+	}
+
+	public List<OrderItem> getOrderItems() {
+		return this.orderItems;
+	}
+	// 주문 상태 업데이트 메서드
+	public void updateStatus(OrderStatus newStatus) {
+		this.status = newStatus;
+	}
 }
