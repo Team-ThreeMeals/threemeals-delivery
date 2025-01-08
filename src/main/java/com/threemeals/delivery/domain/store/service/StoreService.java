@@ -1,15 +1,20 @@
 package com.threemeals.delivery.domain.store.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.threemeals.delivery.config.error.ErrorCode;
 import com.threemeals.delivery.domain.common.exception.AccessDeniedException;
+import com.threemeals.delivery.domain.common.exception.NotFoundException;
+import com.threemeals.delivery.domain.menu.dto.response.MenuResponseDto;
+import com.threemeals.delivery.domain.menu.repository.MenuRepository;
 import com.threemeals.delivery.domain.store.dto.request.SaveStoreRequestDto;
+import com.threemeals.delivery.domain.store.dto.response.StoreDetailResponseDto;
 import com.threemeals.delivery.domain.store.dto.response.StoreResponseDto;
 import com.threemeals.delivery.domain.store.entity.Store;
+import com.threemeals.delivery.domain.store.exception.StoreLimitExceededException;
 import com.threemeals.delivery.domain.store.repository.StoreRepository;
 import com.threemeals.delivery.domain.user.entity.User;
 
@@ -22,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class StoreService {
+	private final MenuRepository menuRepository;
 	private final StoreRepository storeRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -32,37 +38,40 @@ public class StoreService {
 		// 사장님이 소유한 가게 수 확인
 		long storeCount = storeRepository.countByOwnerIdAndIsClosedFalse(userId);
 		if (storeCount >= 3) {
-			throw new IllegalArgumentException("사장님은 최대 3개의 가게만 소유할 수 있습니다.");
+			throw new StoreLimitExceededException();
 		}
 
 		User owner = entityManager.getReference(User.class, userId);
 
-		// Store 엔티티 생성
 		Store store = requestDto.toEntity(owner);
 
-		// 저장 후 DTO 변환
 		Store savedStore = storeRepository.save(store);
 		return StoreResponseDto.toDto(savedStore);
 	}
 
-	public List<StoreResponseDto> getStoresByName(String name) {
-		List<Store> stores = storeRepository.findByStoreNameContainingAndIsClosedFalse(name); // 가게명 검색
-		return stores.stream()
-			.map(StoreResponseDto::toDto) // 엔티티를 DTO로 변환
-			.collect(Collectors.toList());
+	public Page<StoreResponseDto> getStoresByName(String name, Pageable pageable) {
+		Page<Store> stores = storeRepository.findByStoreNameContainingAndIsClosedFalse(name, pageable);
+		return stores.map(StoreResponseDto::toDto);
+	}
+
+	public StoreDetailResponseDto getStoreWithMenusById(Long storeId, Pageable pageable) {
+		Store store = storeRepository.findById(storeId)
+			.orElseThrow(() -> new NotFoundException(ErrorCode.STORE_NOT_FOUND));
+
+		Page<MenuResponseDto> menus = menuRepository.findAllMenuByStoreId(storeId, pageable);
+
+		return StoreDetailResponseDto.toDto(store, menus);
 	}
 
 	@Transactional
 	public StoreResponseDto updateStore(Long storeId, @Valid SaveStoreRequestDto requestDto, Long userId) {
 		Store store = storeRepository.findById(storeId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다."));
+			.orElseThrow(() -> new NotFoundException(ErrorCode.STORE_NOT_FOUND));
 
-		// 소유권 확인
 		if (!store.getOwner().getId().equals(userId)) {
-			throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+			throw new AccessDeniedException(ErrorCode.STORE_DELETED);
 		}
 
-		// 필드 업데이트
 		store.update(
 			requestDto.storeName(),
 			requestDto.storeProfileImgUrl(),
@@ -73,7 +82,6 @@ public class StoreService {
 			requestDto.minOrderPrice()
 		);
 
-		// 저장 및 DTO 변환
 		Store updatedStore = storeRepository.save(store);
 		return StoreResponseDto.toDto(updatedStore);
 	}
@@ -81,17 +89,15 @@ public class StoreService {
 	@Transactional
 	public void deleteStore(Long storeId, Long userId) {
 
-		// 삭제할 가게 조회
 		Store store = storeRepository.findById(storeId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을수 없습니다."));
-
-		// 소유권 확인
+			.orElseThrow(() -> new NotFoundException(ErrorCode.STORE_NOT_FOUND));
 		if (!store.getOwner().getId().equals(userId)) {
-			throw new AccessDeniedException(ErrorCode.ACCESS_DENIED);
+			throw new AccessDeniedException(ErrorCode.STORE_DELETED);
 		}
 
 		// 소프트 삭제
 		store.storeClosed();
 		storeRepository.save(store);
 	}
+
 }
