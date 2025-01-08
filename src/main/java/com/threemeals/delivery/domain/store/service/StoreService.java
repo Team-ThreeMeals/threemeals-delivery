@@ -15,6 +15,7 @@ import com.threemeals.delivery.domain.user.entity.User;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ public class StoreService {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	@Transactional
 	public StoreResponseDto saveStore(SaveStoreRequestDto requestDto, Long userId) {
 
 		// 사장님이 소유한 가게 수 확인
@@ -43,14 +45,14 @@ public class StoreService {
 		return StoreResponseDto.toDto(savedStore);
 	}
 
-	// 다건 조회
-	public List<StoreResponseDto> findStoresByName(String name) {
+	public List<StoreResponseDto> getStoresByName(String name) {
 		List<Store> stores = storeRepository.findByStoreNameContainingAndIsClosedFalse(name); // 가게명 검색
 		return stores.stream()
 			.map(StoreResponseDto::toDto) // 엔티티를 DTO로 변환
 			.collect(Collectors.toList());
 	}
 
+	@Transactional
 	public StoreResponseDto updateStore(Long storeId, @Valid SaveStoreRequestDto requestDto, Long userId) {
 		Store store = storeRepository.findById(storeId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다."));
@@ -76,6 +78,7 @@ public class StoreService {
 		return StoreResponseDto.toDto(updatedStore);
 	}
 
+	@Transactional
 	public void deleteStore(Long storeId, Long userId) {
 
 		// 삭제할 가게 조회
