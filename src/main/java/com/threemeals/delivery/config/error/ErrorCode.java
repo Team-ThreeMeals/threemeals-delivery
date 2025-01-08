@@ -38,7 +38,12 @@ public enum ErrorCode {
     // Menu
     INVALID_MENU_CATEGORY(HttpStatus.BAD_REQUEST, "MENU_400", "유효하지 않은 메뉴 카테고리입니다."),
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU_404", "존재하지 않는 메뉴입니다."),
-    MENU_DELETED(HttpStatus.FORBIDDEN, "USER_403", "삭제된 메뉴입니다."),
+    MENU_DELETED(HttpStatus.FORBIDDEN, "MENU_403", "삭제된 메뉴입니다."),
+
+    // MenuOption
+    MENU_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU_OPTION_404", "존재하지 않는 메뉴 옵션입니다."),
+    MENU_OPTION_DELETED(HttpStatus.FORBIDDEN, "MENU_OPTION_403", "삭제된 메뉴 옵션입니다."),
+
 
     // Store
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE_404", "존재하지 않는 가게입니다."),

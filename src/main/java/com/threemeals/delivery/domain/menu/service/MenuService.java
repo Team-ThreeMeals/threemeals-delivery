@@ -3,11 +3,9 @@ package com.threemeals.delivery.domain.menu.service;
 import static com.threemeals.delivery.config.error.ErrorCode.*;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.threemeals.delivery.domain.common.exception.AccessDeniedException;
 import com.threemeals.delivery.domain.common.exception.NotFoundException;
@@ -36,7 +34,7 @@ public class MenuService {
 	}
 
 	@Transactional
-	public MenuResponseDto createMenu(Long ownerId, MenuRequestDto requestDto) {
+	public MenuResponseDto addMenu(Long ownerId, MenuRequestDto requestDto) {
 		User findOwner = userService.getOwnerById(ownerId);
 
 		// get store (나중에 서비스에서 단건 조회하는 걸로 바꾸자)
@@ -78,11 +76,12 @@ public class MenuService {
 		return findMenu;
 	}
 
+
 	/*
 	  * 스토어를 건드리지 못해서 우선, 메뉴레포에서 만들어야겠다. 나중에 바꾸자
 	  * 스토어를 가져온 다음, 스토어를 가져와서, Owner 비교해야 함
 	 */
-	private void validateMenuBelongsToOwner(Long menuId, Long ownerId) {
+	protected void validateMenuBelongsToOwner(Long menuId, Long ownerId) {
 		if (menuRepository.existsByMenuIdAndOwnerId(menuId, ownerId) == false) { // 해당 메뉴가 owner가 운영하는 가게 메뉴인지 확인
 			throw new AccessDeniedException();
 		}

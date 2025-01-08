@@ -52,7 +52,7 @@ public class MenuApiController {
 		@Authentication UserPrincipal userPrincipal,
 		@Valid @RequestBody MenuRequestDto requestDto) {
 
-		MenuResponseDto response = menuService.createMenu(userPrincipal.getUserId(), requestDto);
+		MenuResponseDto response = menuService.addMenu(userPrincipal.getUserId(), requestDto);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(response);
 	}
