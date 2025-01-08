@@ -13,7 +13,7 @@ public record ReviewResponseDto(
 ) {
 	public static ReviewResponseDto fromReviewEntity(Review review) {
 		return new ReviewResponseDto(
-			review.getUsername(),
+			review.getUser().getUsername(),
 			review.getRating(),
 			review.getContent(),
 			review.getReviewImageUrl(),

@@ -4,6 +4,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.threemeals.delivery.domain.common.entity.BaseEntity;
 import com.threemeals.delivery.domain.order.entity.Order;
+import com.threemeals.delivery.domain.store.entity.Store;
 import com.threemeals.delivery.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -17,12 +18,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "review")
 public class Review extends BaseEntity {
@@ -37,14 +42,14 @@ public class Review extends BaseEntity {
 	private Order order;
 
 	// User도 반드시 알 필요가 있을까? Order가 알고 있는 거 같아서...
-	// @ManyToOne(fetch = FetchType.LAZY)
-	// @JoinColumn(name = "user_id", nullable = false)
-	// private User user;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
 	// store 알 필요가 있을까? 이미 Order가 알고 있음. 참조가 좀 복잡해지기는 하네...
-	// @ManyToOne(fetch = FetchType.LAZY)
-	// @JoinColumn(name = "store_id", nullable = false)
-	// private Store store;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "store_id", nullable = false)
+	private Store store;
 
 	@Column(name = "rating", nullable = false)
 	private Integer rating;

@@ -4,7 +4,7 @@ import com.threemeals.delivery.domain.order.entity.Order;
 import com.threemeals.delivery.domain.review.entity.Review;
 
 public record ReviewRequestDto (
-	Long storeId,
+	Long orderId,
 	int rating,
 	String content,
 	String reviewImageUrl
@@ -13,8 +13,8 @@ public record ReviewRequestDto (
 	public Review toReviewEntity(Order order) {
 		return Review.builder()
 			.order(order)
-			.username(order.getUser().getUsername())
-			.storeName(order.getStore().getStoreName())
+			.user(order.getUser())
+			.store(order.getStore())
 			.rating(this.rating)
 			.content(this.content)
 			.reviewImageUrl(this.reviewImageUrl)
