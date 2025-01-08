@@ -31,11 +31,17 @@ public enum ErrorCode {
     TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN_404", "존재하지 않는 토큰입니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN_401", "만료된 토큰입니다."),
 
-
     // Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT_404", "존재하지 않는 댓글입니다."),
     COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "COMMENT_403", "해당 댓글에 대한 접근 권한이 없습니다."),
 
+    // Menu
+    INVALID_MENU_CATEGORY(HttpStatus.BAD_REQUEST, "MENU_400", "유효하지 않은 메뉴 카테고리입니다."),
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU_404", "존재하지 않는 메뉴입니다."),
+    MENU_DELETED(HttpStatus.FORBIDDEN, "USER_403", "삭제된 메뉴입니다."),
+
+    // Store
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE_404", "존재하지 않는 가게입니다."),
     ;
 
     private final HttpStatus status;
