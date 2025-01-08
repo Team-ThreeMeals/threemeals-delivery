@@ -1,6 +1,5 @@
 package com.threemeals.delivery.domain.store.dto.response;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import com.threemeals.delivery.domain.store.entity.Store;
@@ -14,8 +13,6 @@ public record StoreResponseDto(
 	LocalTime openingTime,
 	LocalTime closingTime,
 	Integer deliverTip,
-	Boolean isClosed,
-	LocalDateTime updatedAt,
 	Integer minOrderPrice
 ) {
 	public static StoreResponseDto toDto(Store store) {
@@ -28,8 +25,6 @@ public record StoreResponseDto(
 			store.getOpeningTime(),
 			store.getClosingTime(),
 			store.getDeliveryTip(),
-			store.getIsClosed(),
-			store.getUpdatedAt(),
 			store.getMinOrderPrice()
 		);
 	}
