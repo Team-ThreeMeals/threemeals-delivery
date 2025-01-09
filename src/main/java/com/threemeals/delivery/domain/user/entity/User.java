@@ -44,7 +44,7 @@ public class User extends BaseEntity {
 	private Boolean isDeleted;
 
 	@Column(name = "role", nullable = false)
-	@Enumerated(EnumType.ORDINAL)
+	@Enumerated(EnumType.STRING)
 	private Role role;
 
 	@Builder

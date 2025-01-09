@@ -2,9 +2,6 @@ package com.threemeals.delivery.domain.user.service;
 
 import static com.threemeals.delivery.config.error.ErrorCode.*;
 
-import jdk.jfr.TransitionTo;
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +14,8 @@ import com.threemeals.delivery.domain.user.dto.request.UpdateUserRequestDto;
 import com.threemeals.delivery.domain.user.dto.response.UserResponseDto;
 import com.threemeals.delivery.domain.user.entity.User;
 import com.threemeals.delivery.domain.user.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
