@@ -2,9 +2,12 @@ package com.threemeals.delivery.domain.store.dto.response;
 
 import java.time.LocalTime;
 
+import org.springframework.data.domain.Page;
+
+import com.threemeals.delivery.domain.menu.dto.response.MenuResponseDto;
 import com.threemeals.delivery.domain.store.entity.Store;
 
-public record StoreResponseDto(
+public record StoreDetailResponseDto(
 	Long id,
 	Long ownerId,
 	String storeName,
@@ -13,10 +16,12 @@ public record StoreResponseDto(
 	LocalTime openingTime,
 	LocalTime closingTime,
 	Integer deliverTip,
-	Integer minOrderPrice
+	Integer minOrderPrice,
+	Page<MenuResponseDto> menus
 ) {
-	public static StoreResponseDto toDto(Store store) {
-		return new StoreResponseDto(
+
+	public static StoreDetailResponseDto toDto(Store store, Page<MenuResponseDto> menus) {
+		return new StoreDetailResponseDto(
 			store.getId(),
 			store.getOwner().getId(),
 			store.getStoreName(),
@@ -25,7 +30,8 @@ public record StoreResponseDto(
 			store.getOpeningTime(),
 			store.getClosingTime(),
 			store.getDeliveryTip(),
-			store.getMinOrderPrice()
+			store.getMinOrderPrice(),
+			menus
 		);
 	}
 }

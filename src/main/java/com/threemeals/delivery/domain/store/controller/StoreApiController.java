@@ -1,7 +1,8 @@
 package com.threemeals.delivery.domain.store.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.threemeals.delivery.domain.auth.UserPrincipal;
 import com.threemeals.delivery.domain.auth.annotation.Authentication;
 import com.threemeals.delivery.domain.store.dto.request.SaveStoreRequestDto;
+import com.threemeals.delivery.domain.store.dto.response.StoreDetailResponseDto;
 import com.threemeals.delivery.domain.store.dto.response.StoreResponseDto;
 import com.threemeals.delivery.domain.store.service.StoreService;
 import com.threemeals.delivery.domain.user.annotation.StoreOwnerOnly;
@@ -44,9 +46,28 @@ public class StoreApiController {
 
 	// 다건 조회 (가게명으로 검색)
 	@GetMapping
-	public ResponseEntity<List<StoreResponseDto>> getStores(@RequestParam String name) {
-		List<StoreResponseDto> stores = storeService.getStoresByName(name);
+	public ResponseEntity<Page<StoreResponseDto>> getStores(
+		@RequestParam String name,
+		@RequestParam(defaultValue = "1") int page,
+		@RequestParam(defaultValue = "5") int size) {
+
+		// 시작 페이지를 1로
+		Pageable adjustedPageable = PageRequest.of(page - 1, size);
+
+		Page<StoreResponseDto> stores = storeService.getStoresByName(name, adjustedPageable);
 		return ResponseEntity.ok(stores);
+	}
+
+	@GetMapping("/{storeId}")
+	public ResponseEntity<StoreDetailResponseDto> getStoreWithMenus(
+		@PathVariable Long storeId,
+		@RequestParam(defaultValue = "1") int page,
+		@RequestParam(defaultValue = "5") int size
+	) {
+		Pageable pageable = PageRequest.of(page - 1, size);
+
+		StoreDetailResponseDto response = storeService.getStoreWithMenusById(storeId, pageable);
+		return ResponseEntity.ok(response);
 	}
 
 	@StoreOwnerOnly
