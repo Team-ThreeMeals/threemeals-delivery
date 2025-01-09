@@ -24,6 +24,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	@Query("SELECT r " +
 		"FROM Review r " +
 		"WHERE r.store.id = :storeId " +
+		"AND r.rating >= :minRange " +
+		"AND r.rating <= :maxRange " +
 		"ORDER BY r.createdAt DESC")
-	Page<Review> findAllStoreReviews(@Param("storeId") Long storeId, Pageable pageable);
+	Page<Review> findAllStoreReviews(@Param("storeId") Long storeId, @Param("minRange") Integer minRange,
+		@Param("maxRange") Integer maxRange, Pageable pageable);
 }

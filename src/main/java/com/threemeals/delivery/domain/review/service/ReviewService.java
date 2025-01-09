@@ -1,5 +1,6 @@
 package com.threemeals.delivery.domain.review.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import com.threemeals.delivery.domain.review.dto.response.ReviewCommentResponseD
 import com.threemeals.delivery.domain.review.dto.response.ReviewResponseDto;
 import com.threemeals.delivery.domain.review.entity.Review;
 import com.threemeals.delivery.domain.review.entity.ReviewComment;
+import com.threemeals.delivery.domain.review.exception.RatingRangeException;
 import com.threemeals.delivery.domain.review.exception.ReviewNotAllowedException;
 import com.threemeals.delivery.domain.review.exception.StoreAccessException;
 import com.threemeals.delivery.domain.review.repository.ReviewCommentRepository;
@@ -83,7 +85,14 @@ public class ReviewService {
 		Store store = storeRepository.findById(requestDto.storeId())
 			.orElseThrow(() -> new NotFoundException(ErrorCode.STORE_NOT_FOUND));
 
-		Page<Review> reviewPage = reviewRepository.findAllStoreReviews(requestDto.storeId(), pageable);
+		List<Integer> ratingRange = validateRatingRange(requestDto.minRating(), requestDto.maxRating());
+
+		Page<Review> reviewPage = reviewRepository.findAllStoreReviews(
+			requestDto.storeId(),
+			ratingRange.get(0),
+			ratingRange.get(1),
+			pageable
+		);
 
 		List<Long> reviewIds = reviewPage.getContent().stream()
 			.map(Review::getId)
@@ -130,5 +139,16 @@ public class ReviewService {
 		}
 
 		reviewComment.deleteReviewComment();
+	}
+
+	private List<Integer> validateRatingRange(Integer minRating, Integer maxRating) {
+		int minRange = (minRating == null) ? 1 : minRating;
+		int maxRange = (maxRating == null) ? 5 : maxRating;
+
+		if (minRange > maxRange) {
+			throw new RatingRangeException();
+		}
+
+		return List.of(minRange, maxRange);
 	}
 }
