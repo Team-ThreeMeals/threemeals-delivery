@@ -66,4 +66,12 @@ public class ReviewApiController {
 		return ResponseEntity.ok().build();
 	}
 
+	@StoreOwnerOnly
+	@DeleteMapping("/comments/{commentId}")
+	public ResponseEntity<Void> deleteReviewComment (@Authentication UserPrincipal userPrincipal, @PathVariable Long commentId) {
+		Long ownerId = userPrincipal.getUserId();
+		reviewService.deleteReviewComment(ownerId, commentId);
+		return ResponseEntity.ok().build();
+	}
+
 }

@@ -120,4 +120,15 @@ public class ReviewService {
 		review.deleteReview();
 
 	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteReviewComment(Long ownerId, Long commentId) {
+		ReviewComment reviewComment = reviewCommentRepository.findReviewComment(commentId);
+
+		if (reviewComment.getOwner().getId() != ownerId) {
+			throw new AccessDeniedException(ErrorCode.COMMENT_ACCESS_DENIED);
+		}
+
+		reviewComment.deleteReviewComment();
+	}
 }
