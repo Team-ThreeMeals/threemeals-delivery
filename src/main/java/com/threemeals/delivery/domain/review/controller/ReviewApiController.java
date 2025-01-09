@@ -53,14 +53,15 @@ public class ReviewApiController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Page<GetReviewResponseDto>> getStoreAllReviews(@RequestParam(defaultValue = "1") int page,
+	public ResponseEntity<Page<GetReviewResponseDto>> getStoreAllReviews(
+		@RequestParam(defaultValue = "1") int page,
 		@Valid @RequestBody GetReviewRequestDto requestDto) {
 		Pageable pageable = PageRequest.of(page - 1, 10);
 		return ResponseEntity.ok(reviewService.getStoreAllReviews(requestDto, pageable));
 	}
 
 	@DeleteMapping("/{reviewId}")
-	public ResponseEntity<Void> deleteReview (@Authentication UserPrincipal userPrincipal, @PathVariable Long reviewId) {
+	public ResponseEntity<Void> deleteReview(@Authentication UserPrincipal userPrincipal, @PathVariable Long reviewId) {
 		Long userId = userPrincipal.getUserId();
 		reviewService.deleteReview(userId, reviewId);
 		return ResponseEntity.ok().build();
@@ -68,7 +69,8 @@ public class ReviewApiController {
 
 	@StoreOwnerOnly
 	@DeleteMapping("/comments/{commentId}")
-	public ResponseEntity<Void> deleteReviewComment (@Authentication UserPrincipal userPrincipal, @PathVariable Long commentId) {
+	public ResponseEntity<Void> deleteReviewComment(@Authentication UserPrincipal userPrincipal,
+		@PathVariable Long commentId) {
 		Long ownerId = userPrincipal.getUserId();
 		reviewService.deleteReviewComment(ownerId, commentId);
 		return ResponseEntity.ok().build();
