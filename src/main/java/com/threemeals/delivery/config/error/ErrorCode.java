@@ -36,6 +36,15 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT_404", "존재하지 않는 댓글입니다."),
     COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "COMMENT_403", "해당 댓글에 대한 접근 권한이 없습니다."),
 
+    // Review
+    REVIEW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "REVIEW_400", "배달 진행 중으로 리뷰를 남길 수 없습니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_404", "존재하지 않는 리뷰입니다."),
+    REVIEW_ACCESS_DENIED(HttpStatus.FORBIDDEN,"REVIEW_403", "해당 리뷰에 대한 접근 권한이 없습니다."),
+    REVIEW_RATING_RANGE_BAD(HttpStatus.BAD_REQUEST, "REVIEW_400", "범위가 유효하지 않습니다."),
+
+    // Store
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE_404", "존재하지 않는 가게입니다."),
+
     ;
 
     private final HttpStatus status;
