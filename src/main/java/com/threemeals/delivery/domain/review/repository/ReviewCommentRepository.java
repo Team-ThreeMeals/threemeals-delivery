@@ -13,6 +13,7 @@ public interface ReviewCommentRepository extends JpaRepository<ReviewComment, Lo
 		"FROM ReviewComment rc " +
 		"WHERE rc.isDeleted = false " +
 		"AND rc.review.id " +
-		"IN :reviewIds")
+		"IN :reviewIds " +
+		"ORDER BY rc.createdAt ASC")
 	List<ReviewComment> findByReviewIds(@Param("reviewIds") List<Long> reviewIds);
 }
