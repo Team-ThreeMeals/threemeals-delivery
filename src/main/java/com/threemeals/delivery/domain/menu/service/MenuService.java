@@ -12,6 +12,8 @@ import com.threemeals.delivery.domain.common.exception.NotFoundException;
 import com.threemeals.delivery.domain.menu.dto.request.MenuRequestDto;
 import com.threemeals.delivery.domain.menu.dto.response.MenuResponseDto;
 import com.threemeals.delivery.domain.menu.entity.Menu;
+import com.threemeals.delivery.domain.menu.entity.MenuOption;
+import com.threemeals.delivery.domain.menu.repository.MenuOptionRepository;
 import com.threemeals.delivery.domain.menu.repository.MenuRepository;
 import com.threemeals.delivery.domain.store.entity.Store;
 import com.threemeals.delivery.domain.store.repository.StoreRepository;
@@ -59,6 +61,7 @@ public class MenuService {
 		return MenuResponseDto.fromEntity(findMenu);
 	}
 
+	// 메뉴 삭제시, 서브 메뉴 옵션 모두 삭제
 	@Transactional
 	public void deleteMenu(Long ownerId, Long menuId) {
 
@@ -66,6 +69,7 @@ public class MenuService {
 		validateMenuBelongsToOwner(menuId, ownerId);
 
 		findMenu.deleteMe();
+		menuRepository.deleteAllMenuOptionsByMenuId(menuId);
 	}
 
 	public Menu getMenuById(Long menuId) {

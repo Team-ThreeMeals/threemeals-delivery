@@ -11,4 +11,6 @@ public interface MenuRepositoryForQueryDSL {
 
 	Page<MenuResponseDto> findAllMenuByStoreId(Long storeId, Pageable pageable);
 
+	void deleteAllMenuOptionsByMenuId(Long menuId);
+
 }

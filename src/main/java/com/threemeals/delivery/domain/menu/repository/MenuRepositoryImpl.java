@@ -1,6 +1,7 @@
 package com.threemeals.delivery.domain.menu.repository;
 
 import static com.threemeals.delivery.domain.menu.entity.QMenu.*;
+import static com.threemeals.delivery.domain.menu.entity.QMenuOption.*;
 import static com.threemeals.delivery.domain.store.entity.QStore.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.threemeals.delivery.domain.menu.dto.response.MenuResponseDto;
+import com.threemeals.delivery.domain.menu.entity.QMenuOption;
 
 import jakarta.persistence.EntityManager;
 
@@ -63,6 +65,18 @@ public class MenuRepositoryImpl implements MenuRepositoryForQueryDSL {
 			.where(store.id.eq(storeId), menu.isDeleted.isFalse());
 
 		return PageableExecutionUtils.getPage(content, pageable, queryCount::fetchOne);
+	}
+
+	/*
+	 * 메뉴에 속한 서브 메뉴 모두 삭제(Soft Deletion). 원래 MenuOptionM쪽에서 하는 게 좋은데, 순환참조 때문에 나중에 바꿔야 할 듯
+	 */
+	@Override
+	public void deleteAllMenuOptionsByMenuId(Long menuId) {
+		queryFactory
+			.update(menuOption)
+			.set(menuOption.isDeleted, true)
+			.where(menuOption.menu.id.eq(menuId))
+			.execute();
 	}
 
 }
