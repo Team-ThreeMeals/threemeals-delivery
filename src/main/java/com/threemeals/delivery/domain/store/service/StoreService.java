@@ -14,6 +14,7 @@ import com.threemeals.delivery.domain.store.dto.request.SaveStoreRequestDto;
 import com.threemeals.delivery.domain.store.dto.response.StoreDetailResponseDto;
 import com.threemeals.delivery.domain.store.dto.response.StoreResponseDto;
 import com.threemeals.delivery.domain.store.entity.Store;
+import com.threemeals.delivery.domain.store.exception.StoreAlreadyClosedException;
 import com.threemeals.delivery.domain.store.exception.StoreLimitExceededException;
 import com.threemeals.delivery.domain.store.repository.StoreRepository;
 import com.threemeals.delivery.domain.user.entity.User;
@@ -69,7 +70,7 @@ public class StoreService {
 			.orElseThrow(() -> new NotFoundException(ErrorCode.STORE_NOT_FOUND));
 
 		if (!store.getOwner().getId().equals(userId)) {
-			throw new AccessDeniedException(ErrorCode.STORE_DELETED);
+			throw new AccessDeniedException(ErrorCode.STORE_ACCESS_DENIED);
 		}
 
 		store.update(
@@ -92,7 +93,11 @@ public class StoreService {
 		Store store = storeRepository.findById(storeId)
 			.orElseThrow(() -> new NotFoundException(ErrorCode.STORE_NOT_FOUND));
 		if (!store.getOwner().getId().equals(userId)) {
-			throw new AccessDeniedException(ErrorCode.STORE_DELETED);
+			throw new AccessDeniedException(ErrorCode.STORE_ACCESS_DENIED);
+		}
+
+		if(store.getIsClosed() == true){
+			throw new StoreAlreadyClosedException();
 		}
 
 		// 소프트 삭제
