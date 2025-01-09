@@ -8,8 +8,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 
 @SpringBootApplication
-@EnableJpaAuditing
-@EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO) // 페이징시 파라미터 간소화
+
 public class DeliveryApplication {
 
     public static void main(String[] args) {
