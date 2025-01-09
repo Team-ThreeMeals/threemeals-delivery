@@ -6,7 +6,8 @@ public record UserResponseDto(
 	Long id,
 	String username,
 	String email,
-	String address
+	String address,
+	String profileImgUrl
 ) {
 
 	public static UserResponseDto fromEntity(User user) {
@@ -14,7 +15,9 @@ public record UserResponseDto(
 			user.getId(),
 			user.getUsername(),
 			user.getEmail(),
-			user.getAddress()
+			user.getAddress(),
+			user.getProfileImgUrl()
 		);
 	}
+
 }

@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "order")
+@Table(name = "orders")
 public class Order extends BaseEntity {
 
 	@Id
