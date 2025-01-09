@@ -5,7 +5,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +57,13 @@ public class ReviewApiController {
 		@Valid @RequestBody GetReviewRequestDto requestDto) {
 		Pageable pageable = PageRequest.of(page - 1, 10);
 		return ResponseEntity.ok(reviewService.getStoreAllReviews(requestDto, pageable));
+	}
+
+	@DeleteMapping("/{reviewId}")
+	public ResponseEntity<Void> deleteReview (@Authentication UserPrincipal userPrincipal, @PathVariable Long reviewId) {
+		Long userId = userPrincipal.getUserId();
+		reviewService.deleteReview(userId, reviewId);
+		return ResponseEntity.ok().build();
 	}
 
 }

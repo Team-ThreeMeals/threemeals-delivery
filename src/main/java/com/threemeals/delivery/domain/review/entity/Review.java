@@ -1,5 +1,6 @@
 package com.threemeals.delivery.domain.review.entity;
 
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.threemeals.delivery.domain.common.entity.BaseEntity;
@@ -25,6 +26,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@SQLRestriction("is_deleted = false")
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "review")
 public class Review extends BaseEntity {
@@ -69,6 +71,10 @@ public class Review extends BaseEntity {
 		this.content = content;
 		this.reviewImageUrl = reviewImageUrl;
 		this.isDeleted = false;
+	}
+
+	public void deleteReview() {
+		this.isDeleted = true;
 	}
 
 }

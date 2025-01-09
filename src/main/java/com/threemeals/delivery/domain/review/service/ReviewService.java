@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.threemeals.delivery.config.error.ErrorCode;
+import com.threemeals.delivery.domain.common.exception.AccessDeniedException;
 import com.threemeals.delivery.domain.common.exception.NotFoundException;
 import com.threemeals.delivery.domain.menu.entity.OrderStatus;
 import com.threemeals.delivery.domain.order.entity.Order;
@@ -105,5 +106,18 @@ public class ReviewService {
 			.toList();
 
 		return PageableExecutionUtils.getPage(reviewList, pageable, reviewPage::getTotalElements);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteReview(Long userId, Long reviewID) {
+
+		Review review = reviewRepository.findReviewById(reviewID);
+
+		if (review.getUser().getId() != userId) {
+			throw new AccessDeniedException(ErrorCode.REVIEW_ACCESS_DENIED);
+		}
+
+		review.deleteReview();
+
 	}
 }
