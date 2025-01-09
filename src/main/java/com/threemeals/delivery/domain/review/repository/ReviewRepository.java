@@ -24,7 +24,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	@Query("SELECT r " +
 		"FROM Review r " +
 		"WHERE r.store.id = :storeId " +
-		"AND r.isDeleted = false " +
 		"ORDER BY r.createdAt DESC")
 	Page<Review> findAllStoreReviews(@Param("storeId") Long storeId, Pageable pageable);
 }
