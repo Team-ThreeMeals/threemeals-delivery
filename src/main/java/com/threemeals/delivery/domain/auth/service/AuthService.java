@@ -59,8 +59,8 @@ public class AuthService {
 			throw new AuthenticationException(INVALID_CREDENTIALS);
 		}
 
-		String accessToken = BEARER_PREFIX + tokenProvider.generateToken(findUser, ACCESS_TOKEN_DURATION);
-		String refreshToken = BEARER_PREFIX + tokenProvider.generateToken(findUser, REFRESH_TOKEN_DURATION);
+		String accessToken = tokenProvider.generateToken(findUser, ACCESS_TOKEN_DURATION);
+		String refreshToken = tokenProvider.generateToken(findUser, REFRESH_TOKEN_DURATION);
 
 		return new LoginResponseDto(accessToken, refreshToken);
 	}

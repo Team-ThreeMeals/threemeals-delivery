@@ -1,28 +1,30 @@
 package com.threemeals.delivery.config;
 
+import static com.threemeals.delivery.config.error.ErrorCode.*;
+import static com.threemeals.delivery.config.util.Token.*;
+import static com.threemeals.delivery.config.util.Url.*;
+import static org.springframework.util.StringUtils.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
 import com.threemeals.delivery.config.jwt.TokenProvider;
 import com.threemeals.delivery.domain.common.exception.NotFoundException;
 import com.threemeals.delivery.domain.user.entity.Role;
-import jakarta.servlet.*;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-
-import static com.threemeals.delivery.config.error.ErrorCode.TOKEN_NOT_FOUND;
-import static com.threemeals.delivery.config.util.Token.AUTHORIZATION_HEADER;
-import static com.threemeals.delivery.config.util.Url.isIncludedInWhiteList;
-import static org.springframework.util.StringUtils.hasText;
-
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter implements Filter {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private final TokenProvider tokenProvider;
 
     @Override
@@ -32,8 +34,6 @@ public class JwtAuthenticationFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) httpRequest;
         HttpServletResponse response = (HttpServletResponse) httpResponse;
-
-        log.debug("Processing authorization for request: {}", request.getRequestURI());
 
         if (isIncludedInWhiteList(request.getRequestURI())) {
             filterChain.doFilter(request, response);
@@ -62,8 +62,6 @@ public class JwtAuthenticationFilter implements Filter {
         }
 
         tokenProvider.validateToken(accessToken);
-
-        log.debug("JWT token is valid for request.");
     }
 
 }
