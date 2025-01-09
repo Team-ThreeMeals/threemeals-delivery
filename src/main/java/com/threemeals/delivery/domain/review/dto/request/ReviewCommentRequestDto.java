@@ -18,7 +18,6 @@ public record ReviewCommentRequestDto(
 			.review(review)
 			.owner(review.getStore().getOwner())
 			.content(this.content)
-			.isDeleted(false)
 			.build();
 	}
 }

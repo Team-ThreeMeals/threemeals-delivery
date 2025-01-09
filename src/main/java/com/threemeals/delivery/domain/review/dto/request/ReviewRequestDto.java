@@ -27,7 +27,6 @@ public record ReviewRequestDto(
 			.rating(this.rating)
 			.content(this.content)
 			.reviewImageUrl(this.reviewImageUrl)
-			.isDeleted(false)
 			.build();
 	}
 }

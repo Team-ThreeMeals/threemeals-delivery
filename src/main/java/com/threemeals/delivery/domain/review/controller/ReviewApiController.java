@@ -1,16 +1,23 @@
 package com.threemeals.delivery.domain.review.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.threemeals.delivery.domain.auth.UserPrincipal;
 import com.threemeals.delivery.domain.auth.annotation.Authentication;
+import com.threemeals.delivery.domain.review.dto.request.GetReviewRequestDto;
 import com.threemeals.delivery.domain.review.dto.request.ReviewCommentRequestDto;
 import com.threemeals.delivery.domain.review.dto.request.ReviewRequestDto;
+import com.threemeals.delivery.domain.review.dto.response.GetReviewResponseDto;
 import com.threemeals.delivery.domain.review.dto.response.ReviewCommentResponseDto;
 import com.threemeals.delivery.domain.review.dto.response.ReviewResponseDto;
 import com.threemeals.delivery.domain.review.service.ReviewService;
@@ -42,4 +49,12 @@ public class ReviewApiController {
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(reviewService.saveReviewComment(requestDto, ownerId));
 	}
+
+	@GetMapping
+	public ResponseEntity<Page<GetReviewResponseDto>> getStoreAllReviews(@RequestParam(defaultValue = "1") int page,
+		@Valid @RequestBody GetReviewRequestDto requestDto) {
+		Pageable pageable = PageRequest.of(page - 1, 10);
+		return ResponseEntity.ok(reviewService.getStoreAllReviews(requestDto, pageable));
+	}
+
 }

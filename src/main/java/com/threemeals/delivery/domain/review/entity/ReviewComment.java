@@ -14,18 +14,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "review_comment") // 리뷰에 대한 사장님 답변 (테이블명이 좀 헷갈린다. 대댓글 테이블 같음)
@@ -36,7 +32,7 @@ public class ReviewComment extends BaseEntity {
 	@Column(name = "id", updatable = false)
 	private Long id;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "review_id", nullable = false)
 	private Review review; // 댓글이 달린 리뷰
 
@@ -49,4 +45,12 @@ public class ReviewComment extends BaseEntity {
 
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
+
+	@Builder
+	public ReviewComment (Review review, User owner, String content) {
+		this.review = review;
+		this.owner = owner;
+		this.content = content;
+		this.isDeleted = false;
+	}
 }

@@ -18,7 +18,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +25,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Builder
-@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "review")
 public class Review extends BaseEntity {
@@ -62,5 +59,16 @@ public class Review extends BaseEntity {
 
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
+
+	@Builder
+	public Review(Order order, User user, Store store,  Integer rating, String content, String reviewImageUrl) {
+		this.order = order;
+		this.user = user;
+		this.store = store;
+		this.rating = rating;
+		this.content = content;
+		this.reviewImageUrl = reviewImageUrl;
+		this.isDeleted = false;
+	}
 
 }
