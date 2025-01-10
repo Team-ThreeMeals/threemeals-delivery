@@ -24,7 +24,24 @@ jobs:
       - name: Grant execute permission for gradlew # name <- 스텝의 이름
         run: chmod +x gradlew
 
-#      - name: Build with Gradle
-#        run: ./gradlew clean build
+      - name: Start Redis container
+        run: |
+          docker run --name redis -d -p 6379:6379 redis:latest
+          docker ps
+
+      - name: Wait for Redis to start
+        run: |
+          for i in {1..10}; do
+            if docker exec redis redis-cli ping | grep -q "PONG"; then
+              echo "Redis is up and running!";
+              break;
+            fi
+            echo "Waiting for Redis to be ready...";
+            sleep 2;
+          done
+        shell: bash
+
       - name: Run tests
+        env:
+          SPRING_PROFILES_ACTIVE: test
         run: ./gradlew test --info
