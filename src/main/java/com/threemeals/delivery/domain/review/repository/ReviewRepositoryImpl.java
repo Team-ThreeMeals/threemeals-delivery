@@ -10,12 +10,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.threemeals.delivery.domain.review.dto.response.GetReviewResponseDto;
 import com.threemeals.delivery.domain.review.dto.response.ReviewCommentResponseDto;
 import com.threemeals.delivery.domain.review.dto.response.ReviewResponseDto;
-import com.threemeals.delivery.domain.review.entity.QReview;
-import com.threemeals.delivery.domain.review.entity.QReviewComment;
+import static com.threemeals.delivery.domain.review.entity.QReview.review;
+import static com.threemeals.delivery.domain.review.entity.QReviewComment.reviewComment;
+
 import com.threemeals.delivery.domain.review.entity.Review;
 
 import jakarta.persistence.EntityManager;
@@ -30,16 +32,15 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
 
 	@Override
 	public Page<GetReviewResponseDto> findAllReviewsWithComments(Long storeId, int minRating, int maxRating, Pageable pageable) {
-		QReview review = QReview.review;
-		QReviewComment reviewComment = QReviewComment.reviewComment;
-		
+
 		List<Tuple> joinComments = queryFactory
 			.select(review, reviewComment)
 			.from(review)
 			.leftJoin(reviewComment).on(reviewComment.review.eq(review))
 			.where(
 				review.store.id.eq(storeId),
-				review.rating.between(minRating, maxRating)
+				review.rating.between(minRating, maxRating),
+				review.isDeleted.eq(false)
 			)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -71,6 +72,16 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
 				groupedComments.getOrDefault(tuple.get(review), Collections.emptyList())
 			))
 			.toList();
-		return PageableExecutionUtils.getPage(reviews, pageable, joinComments::size);
+
+		JPAQuery<Long> queryCount = queryFactory
+			.select(review.count())
+			.from(review)
+			.where(
+				review.store.id.eq(storeId),
+				review.rating.between(minRating, maxRating),
+				review.isDeleted.eq(false)
+			);
+
+		return PageableExecutionUtils.getPage(reviews, pageable, queryCount::fetchOne);
 	}
 }

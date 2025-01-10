@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@SQLRestriction("is_deleted = false")
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "review_comment") // 리뷰에 대한 사장님 답변 (테이블명이 좀 헷갈린다. 대댓글 테이블 같음)
 public class ReviewComment extends BaseEntity {
