@@ -1,5 +1,6 @@
 package com.threemeals.delivery.domain.store.service;
 
+import static com.threemeals.delivery.config.error.ErrorCode.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +51,14 @@ public class StoreService {
 		return StoreResponseDto.toDto(savedStore);
 	}
 
+	public Store getStoreById(Long userId) {
+		Store findStore = storeRepository.findById(userId)
+			.orElseThrow(() -> new NotFoundException(STORE_NOT_FOUND));
+
+		findStore.validateIsClosed();
+		return findStore;
+	}
+
 	public Page<StoreResponseDto> getStoresByName(String name, Pageable pageable) {
 		Page<Store> stores = storeRepository.findByStoreNameContainingAndIsClosedFalse(name, pageable);
 		return stores.map(StoreResponseDto::toDto);
@@ -96,7 +105,7 @@ public class StoreService {
 			throw new AccessDeniedException(ErrorCode.STORE_ACCESS_DENIED);
 		}
 
-		if(store.getIsClosed() == true){
+		if (store.getIsClosed() == true) {
 			throw new StoreAlreadyClosedException();
 		}
 
