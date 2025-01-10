@@ -1,6 +1,5 @@
 package com.threemeals.delivery.domain.review.entity;
 
-import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.threemeals.delivery.domain.common.entity.BaseEntity;
@@ -62,7 +61,7 @@ public class Review extends BaseEntity {
 	private Boolean isDeleted;
 
 	@Builder
-	public Review(Order order, User user, Store store,  Integer rating, String content, String reviewImageUrl) {
+	public Review(Order order, User user, Store store, Integer rating, String content, String reviewImageUrl) {
 		this.order = order;
 		this.user = user;
 		this.store = store;
