@@ -27,8 +27,8 @@ public class StoreLikeRepositoryCustomImpl implements StoreLikeRepositoryCustom 
 		QStoreLike storeLike = QStoreLike.storeLike;
 
 		return queryFactory.selectFrom(storeLike)
-			.where(storeLike.userId.id.eq(userId),
-				storeLike.storeId.id.eq(storeId))
+			.where(storeLike.user.id.eq(userId),
+				storeLike.store.id.eq(storeId))
 			.fetchOne();
 	}
 
@@ -37,7 +37,7 @@ public class StoreLikeRepositoryCustomImpl implements StoreLikeRepositoryCustom 
 		QStoreLike storeLike = QStoreLike.storeLike;
 
 		List<StoreLike> results = queryFactory.selectFrom(storeLike)
-			.where(storeLike.userId.id.eq(userId), storeLike.isActive.isTrue())
+			.where(storeLike.user.id.eq(userId), storeLike.isActive.isTrue())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
@@ -45,7 +45,7 @@ public class StoreLikeRepositoryCustomImpl implements StoreLikeRepositoryCustom 
 		JPAQuery<Long> countQuery = queryFactory
 			.select(storeLike.count())
 			.from(storeLike)
-			.where(storeLike.userId.id.eq(userId).and(storeLike.isActive.isTrue()));
+			.where(storeLike.user.id.eq(userId).and(storeLike.isActive.isTrue()));
 
 		return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
 	}
