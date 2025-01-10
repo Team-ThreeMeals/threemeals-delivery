@@ -58,6 +58,7 @@ dependencies {
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    runtimeOnly("com.h2database:h2")
 
     // BCrypt Encoder (Spring Security 의존성 추가 없이 Encoder 사용할 때)
     implementation("at.favre.lib:bcrypt:0.10.2")

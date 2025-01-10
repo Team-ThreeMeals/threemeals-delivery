@@ -17,6 +17,7 @@ import com.threemeals.delivery.domain.menu.repository.MenuOptionRepository;
 import com.threemeals.delivery.domain.menu.repository.MenuRepository;
 import com.threemeals.delivery.domain.store.entity.Store;
 import com.threemeals.delivery.domain.store.repository.StoreRepository;
+import com.threemeals.delivery.domain.store.service.StoreService;
 import com.threemeals.delivery.domain.user.entity.User;
 import com.threemeals.delivery.domain.user.service.UserService;
 
@@ -28,7 +29,7 @@ public class MenuService {
 
 	private final MenuRepository menuRepository;
 	private final UserService userService;
-	private final StoreRepository storeRepository; // 바꿔야 함
+	private final StoreService storeService;
 
 	// 하나의 스토에 있는 모든 메뉴 가져오기
 	public Page<MenuResponseDto> getAllMenuInStore(Long storeId, Pageable pageable) {
@@ -36,18 +37,17 @@ public class MenuService {
 	}
 
 	@Transactional
-	public MenuResponseDto addMenu(Long ownerId, MenuRequestDto requestDto) {
-		User findOwner = userService.getOwnerById(ownerId);
+	public MenuResponseDto addMenu(Long storeId, Long ownerId, MenuRequestDto requestDto) {
 
-		// get store (나중에 서비스에서 단건 조회하는 걸로 바꾸자)
-		Store store = storeRepository.findById(findOwner.getId())
-			.orElseThrow(() -> new NotFoundException(STORE_NOT_FOUND));
+		Store findStore = storeService.getStoreById(storeId);
+		if (findStore.getOwner().getId() != ownerId) { // 이렇게 비교하는 건 살짝 별로다. 쿼리를 한 번 더 쏴야 해서 `N+1` 문제 발생할 수 있음.
+			throw new AccessDeniedException();
+		}
 
 		Menu newMenu = requestDto.toEntity();
-		newMenu.setStore(store);
+		newMenu.setStore(findStore);
 
 		Menu savedMenu = menuRepository.save(newMenu);
-
 		return MenuResponseDto.fromEntity(savedMenu);
 	}
 
@@ -80,10 +80,9 @@ public class MenuService {
 		return findMenu;
 	}
 
-
 	/*
-	  * 스토어를 건드리지 못해서 우선, 메뉴레포에서 만들어야겠다. 나중에 바꾸자
-	  * 스토어를 가져온 다음, 스토어를 가져와서, Owner 비교해야 함
+	 * 스토어를 건드리지 못해서 우선, 메뉴레포에서 만들어야겠다. 나중에 바꾸자
+	 * 스토어를 가져온 다음, 스토어를 가져와서, Owner 비교해야 함
 	 */
 	protected void validateMenuBelongsToOwner(Long menuId, Long ownerId) {
 		if (menuRepository.existsByMenuIdAndOwnerId(menuId, ownerId) == false) { // 해당 메뉴가 owner가 운영하는 가게 메뉴인지 확인
