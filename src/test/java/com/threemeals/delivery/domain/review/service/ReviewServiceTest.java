@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.threemeals.delivery.domain.menu.entity.OrderStatus;
+import com.threemeals.delivery.domain.order.entity.OrderStatus;
 import com.threemeals.delivery.domain.order.entity.Order;
 import com.threemeals.delivery.domain.order.repository.OrderRepository;
 import com.threemeals.delivery.domain.review.dto.request.ReviewRequestDto;
@@ -69,7 +69,7 @@ class ReviewServiceTest {
 
 	public static Order createMockOrder(User user, Store store, Long id) {
 		Order order = Order.builder()
-			.status(OrderStatus.DELIVERED)
+			.status(OrderStatus.COMPLETED)
 			.user(user)
 			.store(store)
 			.build();
