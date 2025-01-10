@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 public class StoreLikeService {
 
 	private final StoreLikeRepository storeLikeRepository;
-	private final UserService userService; // 유저 조회를 위해 필요
-	private final StoreService storeService; // 가게 조회를 위해 필요
+	private final UserService userService;
+	private final StoreService storeService;
 
 	@Transactional
 	public StoreLikeResponseDto toggleStoreLike(Long userId, Long storeId) {
@@ -47,14 +47,7 @@ public class StoreLikeService {
 		// 활성화된 좋아요 목록 조회
 		Page<StoreLike> likedStores = storeLikeRepository.findAllByUserIdAndIsActiveTrue(userId, pageable);
 
-		// DTO 리스트로 변환
-		return likedStores
-			.map(storeLike -> new StoreLikeResponseDto(
-				storeLike.getStoreId().getId(),
-				storeLike.getUserId().getId(),
-				storeLike.getStoreId().getStoreName(),
-				true // 항상 true로 반환
-			));
+		return likedStores.map(StoreLikeResponseDto::fromEntity);
 	}
 
 }

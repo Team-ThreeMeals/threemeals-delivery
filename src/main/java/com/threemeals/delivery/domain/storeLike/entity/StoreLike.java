@@ -34,18 +34,18 @@ public class StoreLike extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "store_id", nullable = false)
-	private Store storeId;
+	private Store store;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
-	private User userId;
+	private User user;
 
 	@Column(name = "is_active", nullable = false)
 	private Boolean isActive;
 
-	public StoreLike(Store storeId, User userId, Boolean isActive) {
-		this.storeId = storeId;
-		this.userId = userId;
+	public StoreLike(Store store, User user, Boolean isActive) {
+		this.store = store;
+		this.user = user;
 		this.isActive = isActive;
 	}
 
