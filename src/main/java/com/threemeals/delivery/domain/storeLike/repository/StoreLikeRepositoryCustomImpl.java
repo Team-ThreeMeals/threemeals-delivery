@@ -3,9 +3,10 @@ package com.threemeals.delivery.domain.storeLike.repository;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.threemeals.delivery.domain.storeLike.entity.QStoreLike;
 import com.threemeals.delivery.domain.storeLike.entity.StoreLike;
@@ -26,8 +27,8 @@ public class StoreLikeRepositoryCustomImpl implements StoreLikeRepositoryCustom 
 		QStoreLike storeLike = QStoreLike.storeLike;
 
 		return queryFactory.selectFrom(storeLike)
-			.where(storeLike.userId.id.eq(userId), // userId의 id 필드 비교
-				storeLike.storeId.id.eq(storeId)) // storeId의 id 필드 비교
+			.where(storeLike.userId.id.eq(userId),
+				storeLike.storeId.id.eq(storeId))
 			.fetchOne();
 	}
 
@@ -37,17 +38,16 @@ public class StoreLikeRepositoryCustomImpl implements StoreLikeRepositoryCustom 
 
 		List<StoreLike> results = queryFactory.selectFrom(storeLike)
 			.where(storeLike.userId.id.eq(userId), storeLike.isActive.isTrue())
-			.offset(pageable.getOffset()) // 시작 지점
-			.limit(pageable.getPageSize()) // 페이지 크기
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
 			.fetch();
 
-		// 전체 데이터 수 조회
-		long total = queryFactory.selectFrom(storeLike)
-			.where(storeLike.userId.id.eq(userId), storeLike.isActive.isTrue())
-			.fetchCount();
+		JPAQuery<Long> countQuery = queryFactory
+			.select(storeLike.count())
+			.from(storeLike)
+			.where(storeLike.userId.id.eq(userId).and(storeLike.isActive.isTrue()));
 
-		// Page 객체 반환
-		return new PageImpl<>(results, pageable, total);
+		return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
 	}
 }
 
