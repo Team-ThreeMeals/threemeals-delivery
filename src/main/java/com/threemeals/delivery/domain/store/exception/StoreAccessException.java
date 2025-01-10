@@ -5,6 +5,6 @@ import com.threemeals.delivery.domain.common.exception.AccessDeniedException;
 
 public class StoreAccessException extends AccessDeniedException {
 	public StoreAccessException() {
-		super(ErrorCode.ACCESS_DENIED);
+		super(ErrorCode.STORE_ACCESS_DENIED);
 	}
 }
