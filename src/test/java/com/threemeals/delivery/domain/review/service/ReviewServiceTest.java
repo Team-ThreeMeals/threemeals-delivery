@@ -12,12 +12,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.threemeals.delivery.config.error.ErrorCode;
 import com.threemeals.delivery.domain.order.entity.OrderStatus;
 import com.threemeals.delivery.domain.order.entity.Order;
 import com.threemeals.delivery.domain.order.repository.OrderRepository;
 import com.threemeals.delivery.domain.review.dto.request.ReviewRequestDto;
 import com.threemeals.delivery.domain.review.dto.response.ReviewResponseDto;
 import com.threemeals.delivery.domain.review.entity.Review;
+import com.threemeals.delivery.domain.review.exception.ReviewNotAllowedException;
 import com.threemeals.delivery.domain.review.repository.ReviewRepository;
 import com.threemeals.delivery.domain.store.entity.Store;
 import com.threemeals.delivery.domain.user.entity.Role;
@@ -67,9 +69,9 @@ class ReviewServiceTest {
 		return store;
 	}
 
-	public static Order createMockOrder(User user, Store store, Long id) {
+	public static Order createMockOrder(User user, Store store, Long id, OrderStatus orderStatus) {
 		Order order = Order.builder()
-			.status(OrderStatus.COMPLETED)
+			.status(orderStatus)
 			.user(user)
 			.store(store)
 			.build();
@@ -87,7 +89,7 @@ class ReviewServiceTest {
 		User mockUser = createMockUser(userId);
 		User mockOwner = createMockOwner(2L);
 		Store mockStore = createMockStore(mockOwner, 1L);
-		Order mockOrder = createMockOrder(mockUser, mockStore, orderId);
+		Order mockOrder = createMockOrder(mockUser, mockStore, orderId, OrderStatus.COMPLETED);
 
 		ReviewRequestDto requestDto = new ReviewRequestDto(orderId, 3, "맛있다", "이미지주소");
 
