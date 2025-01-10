@@ -1,19 +1,18 @@
 package com.threemeals.delivery.domain.store.service;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.threemeals.delivery.config.error.ErrorCode;
 import com.threemeals.delivery.domain.common.exception.AccessDeniedException;
-import com.threemeals.delivery.domain.common.exception.NotFoundException;
 import com.threemeals.delivery.domain.menu.dto.response.MenuResponseDto;
 import com.threemeals.delivery.domain.menu.repository.MenuRepository;
 import com.threemeals.delivery.domain.store.dto.request.SaveStoreRequestDto;
 import com.threemeals.delivery.domain.store.dto.response.StoreDetailResponseDto;
 import com.threemeals.delivery.domain.store.dto.response.StoreResponseDto;
 import com.threemeals.delivery.domain.store.entity.Store;
+import com.threemeals.delivery.domain.store.exception.StoreAlreadyClosedException;
 import com.threemeals.delivery.domain.store.exception.StoreLimitExceededException;
 import com.threemeals.delivery.domain.store.repository.StoreRepository;
 import com.threemeals.delivery.domain.user.entity.User;
@@ -49,14 +48,20 @@ public class StoreService {
 		return StoreResponseDto.toDto(savedStore);
 	}
 
+	public Store getStoreById(Long storeId) {
+		Store findStore = storeRepository.findByIdOrThrow(storeId);
+
+		findStore.validateIsClosed();
+		return findStore;
+	}
+
 	public Page<StoreResponseDto> getStoresByName(String name, Pageable pageable) {
 		Page<Store> stores = storeRepository.findByStoreNameContainingAndIsClosedFalse(name, pageable);
 		return stores.map(StoreResponseDto::toDto);
 	}
 
 	public StoreDetailResponseDto getStoreWithMenusById(Long storeId, Pageable pageable) {
-		Store store = storeRepository.findById(storeId)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.STORE_NOT_FOUND));
+		Store store = storeRepository.findByIdOrThrow(storeId);
 
 		Page<MenuResponseDto> menus = menuRepository.findAllMenuByStoreId(storeId, pageable);
 
@@ -65,11 +70,10 @@ public class StoreService {
 
 	@Transactional
 	public StoreResponseDto updateStore(Long storeId, @Valid SaveStoreRequestDto requestDto, Long userId) {
-		Store store = storeRepository.findById(storeId)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.STORE_NOT_FOUND));
+		Store store = storeRepository.findByIdOrThrow(storeId);
 
 		if (!store.getOwner().getId().equals(userId)) {
-			throw new AccessDeniedException(ErrorCode.STORE_DELETED);
+			throw new AccessDeniedException(ErrorCode.STORE_ACCESS_DENIED);
 		}
 
 		store.update(
@@ -89,10 +93,13 @@ public class StoreService {
 	@Transactional
 	public void deleteStore(Long storeId, Long userId) {
 
-		Store store = storeRepository.findById(storeId)
-			.orElseThrow(() -> new NotFoundException(ErrorCode.STORE_NOT_FOUND));
+		Store store = storeRepository.findByIdOrThrow(storeId);
 		if (!store.getOwner().getId().equals(userId)) {
-			throw new AccessDeniedException(ErrorCode.STORE_DELETED);
+			throw new AccessDeniedException(ErrorCode.STORE_ACCESS_DENIED);
+		}
+
+		if (store.getIsClosed() == true) {
+			throw new StoreAlreadyClosedException();
 		}
 
 		// 소프트 삭제
