@@ -50,11 +50,13 @@ public enum ErrorCode {
     MENU_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU_OPTION_404", "존재하지 않는 메뉴 옵션입니다."),
     MENU_OPTION_DELETED(HttpStatus.FORBIDDEN, "MENU_OPTION_403", "삭제된 메뉴 옵션입니다."),
 
-
     // Store
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE_404", "존재하지 않는 가게입니다."),
-	  STORE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST,"STORE_400","사장님은 가게를 최대 3개까지 소유할 수 있습니다."),
-	  STORE_DELETED(HttpStatus.FORBIDDEN,"STORE_403","접근권한이 없습니다."),
+    STORE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST,"STORE_400","사장님은 가게를 최대 3개까지 소유할 수 있습니다."),
+    STORE_DELETED(HttpStatus.FORBIDDEN,"STORE_403","접근권한이 없습니다."),
+
+    // Order
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER_404", "존재하지 않는 주문입니다."),
 
     ;
 
