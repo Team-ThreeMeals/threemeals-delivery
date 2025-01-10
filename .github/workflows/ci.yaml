@@ -4,7 +4,9 @@ name: CI
 # 2. Workflow가 시작될 조건 지정
 on:
   push:
-    branches: [main] # main 브랜치로 푸시할 때마다 Workflow 시작
+    branches: ["main", "dev", "seonguk"]
+  pull_request:
+    branches: ["main", "dev"]
 
 
 jobs:
