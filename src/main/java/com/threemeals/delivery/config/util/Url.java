@@ -9,7 +9,7 @@ public class Url {
     }
 
     public static final String[] WHITE_LIST = {
-        "/signup", "/signup/**", "/login", "/users", "/refresh-token"
+        "/signup", "/signup/**", "/login", "/refresh-token"
 
     };
 
