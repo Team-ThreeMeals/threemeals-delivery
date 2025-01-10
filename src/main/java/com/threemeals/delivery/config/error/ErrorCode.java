@@ -35,6 +35,12 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT_404", "존재하지 않는 댓글입니다."),
     COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "COMMENT_403", "해당 댓글에 대한 접근 권한이 없습니다."),
 
+    // Review
+    REVIEW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "REVIEW_400", "배달 진행 중으로 리뷰를 남길 수 없습니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_404", "존재하지 않는 리뷰입니다."),
+    REVIEW_ACCESS_DENIED(HttpStatus.FORBIDDEN,"REVIEW_403", "해당 리뷰에 대한 접근 권한이 없습니다."),
+    REVIEW_RATING_RANGE_BAD(HttpStatus.BAD_REQUEST, "REVIEW_400", "범위가 유효하지 않습니다."),
+
     // Menu
     INVALID_MENU_CATEGORY(HttpStatus.BAD_REQUEST, "MENU_400", "유효하지 않은 메뉴 카테고리입니다."),
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU_404", "존재하지 않는 메뉴입니다."),
@@ -44,11 +50,13 @@ public enum ErrorCode {
     MENU_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU_OPTION_404", "존재하지 않는 메뉴 옵션입니다."),
     MENU_OPTION_DELETED(HttpStatus.FORBIDDEN, "MENU_OPTION_403", "삭제된 메뉴 옵션입니다."),
 
-
     // Store
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE_404", "존재하지 않는 가게입니다."),
-	STORE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST,"STORE_400","사장님은 가게를 최대 3개까지 소유할 수 있습니다."),
-	STORE_DELETED(HttpStatus.FORBIDDEN,"STORE_403","접근권한이 없습니다.")
+    STORE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST,"STORE_400","사장님은 가게를 최대 3개까지 소유할 수 있습니다."),
+    STORE_DELETED(HttpStatus.FORBIDDEN,"STORE_403","접근권한이 없습니다."),
+
+    // Order
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER_404", "존재하지 않는 주문입니다."),
 
     ;
 
