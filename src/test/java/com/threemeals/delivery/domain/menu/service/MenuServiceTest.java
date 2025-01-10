@@ -19,6 +19,7 @@ import com.threemeals.delivery.domain.menu.entity.Menu;
 import com.threemeals.delivery.domain.menu.repository.MenuRepository;
 import com.threemeals.delivery.domain.store.entity.Store;
 import com.threemeals.delivery.domain.store.repository.StoreRepository;
+import com.threemeals.delivery.domain.store.service.StoreService;
 import com.threemeals.delivery.domain.user.entity.User;
 import com.threemeals.delivery.domain.user.service.UserService;
 
@@ -35,7 +36,7 @@ class MenuServiceTest {
 	UserService userService;
 
 	@Mock
-	StoreRepository storeRepository;
+	StoreService storeService;
 
 	@InjectMocks
 	MenuService menuService;
@@ -49,8 +50,7 @@ class MenuServiceTest {
 		Menu mockMenu = makeMockMenu(requestDto);
 		MenuResponseDto expectedResponse = MenuResponseDto.fromEntity(mockMenu);
 
-		when(userService.getOwnerById(anyLong())).thenReturn(mockOwner);
-		when(storeRepository.findById(anyLong())).thenReturn(Optional.of(mockStore));
+		when(storeService.getStoreById(anyLong())).thenReturn(mockStore);
 		when(menuRepository.save(any(Menu.class))).thenReturn(mockMenu);
 
 		// when

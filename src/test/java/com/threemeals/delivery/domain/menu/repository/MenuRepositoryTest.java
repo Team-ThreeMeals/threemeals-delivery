@@ -47,9 +47,16 @@ class MenuRepositoryTest {
 
 		// when
 		menuRepository.deleteAllMenuOptionsByMenuId(mockMenu.getId());
+		entityManager.flush();
+		entityManager.clear();
+
+		List<MenuOption> updatedMenuOptions = entityManager.createQuery(
+				"SELECT mo FROM MenuOption mo WHERE mo.menu.id = :menuId", MenuOption.class)
+			.setParameter("menuId", mockMenu.getId())
+			.getResultList();
 
 		// then
-		assertThat(mockMenuOptionList)
+		assertThat(updatedMenuOptions)
 			.extracting("isDeleted")
 			.containsOnly(true);
 	}
