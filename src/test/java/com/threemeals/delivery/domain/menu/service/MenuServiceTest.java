@@ -12,16 +12,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.threemeals.delivery.config.error.ErrorCode;
 import com.threemeals.delivery.domain.menu.dto.request.MenuRequestDto;
 import com.threemeals.delivery.domain.menu.dto.response.MenuResponseDto;
 import com.threemeals.delivery.domain.menu.entity.Category;
 import com.threemeals.delivery.domain.menu.entity.Menu;
+import com.threemeals.delivery.domain.menu.exception.DeletedMenuException;
 import com.threemeals.delivery.domain.menu.repository.MenuRepository;
 import com.threemeals.delivery.domain.store.entity.Store;
-import com.threemeals.delivery.domain.store.repository.StoreRepository;
 import com.threemeals.delivery.domain.store.service.StoreService;
 import com.threemeals.delivery.domain.user.entity.User;
-import com.threemeals.delivery.domain.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,9 +31,6 @@ class MenuServiceTest {
 
 	@Mock
 	MenuRepository menuRepository;
-
-	@Mock
-	UserService userService;
 
 	@Mock
 	StoreService storeService;
@@ -97,6 +94,21 @@ class MenuServiceTest {
 
 		// then
 		assertThat(mockMenu.getIsDeleted()).isTrue();
+	}
+
+	@Test
+	void 삭제된_메뉴를_조회할_시_예외가_발생한다() {
+	    // given
+		MenuRequestDto requestDto = makeMenuRequestDto();
+		Menu mockMenu = makeMockMenu(requestDto);
+		setField(mockMenu, "isDeleted", true);
+
+		when(menuRepository.findById(anyLong())).thenReturn(Optional.of(mockMenu));
+
+		// when & then
+		assertThatThrownBy(() -> menuService.getMenuById(anyLong()))
+			.isInstanceOf(DeletedMenuException.class)
+			.hasMessage(ErrorCode.MENU_DELETED.getMessage());
 	}
 
 	private Menu makeMockMenu(MenuRequestDto requestDto) {
