@@ -16,10 +16,14 @@ import com.threemeals.delivery.config.error.ErrorCode;
 import com.threemeals.delivery.domain.order.entity.OrderStatus;
 import com.threemeals.delivery.domain.order.entity.Order;
 import com.threemeals.delivery.domain.order.repository.OrderRepository;
+import com.threemeals.delivery.domain.review.dto.request.ReviewCommentRequestDto;
 import com.threemeals.delivery.domain.review.dto.request.ReviewRequestDto;
+import com.threemeals.delivery.domain.review.dto.response.ReviewCommentResponseDto;
 import com.threemeals.delivery.domain.review.dto.response.ReviewResponseDto;
 import com.threemeals.delivery.domain.review.entity.Review;
+import com.threemeals.delivery.domain.review.entity.ReviewComment;
 import com.threemeals.delivery.domain.review.exception.ReviewNotAllowedException;
+import com.threemeals.delivery.domain.review.repository.ReviewCommentRepository;
 import com.threemeals.delivery.domain.review.repository.ReviewRepository;
 import com.threemeals.delivery.domain.store.entity.Store;
 import com.threemeals.delivery.domain.user.entity.Role;
@@ -33,6 +37,9 @@ class ReviewServiceTest {
 
 	@Mock
 	private OrderRepository orderRepository;
+
+	@Mock
+	private ReviewCommentRepository reviewCommentRepository;
 
 	@InjectMocks
 	private ReviewService reviewService;
@@ -79,6 +86,17 @@ class ReviewServiceTest {
 		return order;
 	}
 
+	private static Review createMockReview(User user, Store store, Order order) {
+		Review review = Review.builder()
+			.store(store)
+			.user(user)
+			.order(order)
+			.content("맛있다")
+			.rating(3)
+			.build();
+		ReflectionTestUtils.setField(review, "createdAt", LocalDateTime.now());
+		return review;
+	}
 
 	@Test
 	public void 리뷰_등록_성공_테스트 () {
@@ -137,5 +155,39 @@ class ReviewServiceTest {
 
 		// then
 		assertEquals(ErrorCode.REVIEW_NOT_ALLOWED, exception.getErrorCode());
+	}
+
+	@Test
+	public void 리뷰_댓글_등록_성공_테스트 () {
+	    // given
+		Long ownerId = 1L;
+		Long reviewId = 1L;
+
+		User mockUser = createMockUser(1L);
+		User mockOwner = createMockOwner(ownerId);
+		Store mockStore = createMockStore(mockOwner, 1L);
+		Order mockOrder = createMockOrder(mockUser, mockStore, 1L, OrderStatus.COMPLETED);
+		Review mockReview = createMockReview(mockUser, mockStore, mockOrder);
+		ReflectionTestUtils.setField(mockReview, "id", reviewId);
+
+		ReviewComment mockReviewComment =
+			ReviewComment.builder()
+				.owner(mockOwner)
+				.review(mockReview)
+				.content("감사합니다.")
+				.build();
+		ReflectionTestUtils.setField(mockReviewComment, "createdAt", LocalDateTime.now());
+
+		ReviewCommentRequestDto requestDto = new ReviewCommentRequestDto(reviewId, "감사합니다");
+
+		when(reviewRepository.findReviewById(requestDto.reviewId())).thenReturn(mockReview);
+		when(reviewCommentRepository.save(any(ReviewComment.class))).thenReturn(mockReviewComment);
+
+		// when
+		ReviewCommentResponseDto responseDto = reviewService.saveReviewComment(requestDto, ownerId);
+
+		// then
+		assertNotNull(responseDto);
+		assertEquals(mockReviewComment.getContent(), responseDto.content());
 	}
 }
