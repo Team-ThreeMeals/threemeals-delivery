@@ -1,0 +1,92 @@
+package com.threemeals.delivery.domain.oauth;
+
+import com.threemeals.delivery.config.MyInfoConfig;
+import com.threemeals.delivery.domain.auth.dto.request.SignupRequestDto;
+import com.threemeals.delivery.domain.auth.dto.response.SignupResponseDto;
+import com.threemeals.delivery.domain.auth.service.AuthService;
+import com.threemeals.delivery.domain.oauth.dto.OAuthResponseDto;
+import com.threemeals.delivery.domain.oauth.service.OAuthUserService;
+import com.threemeals.delivery.domain.oauth.util.UserPrincipal;
+import com.threemeals.delivery.domain.user.dto.response.UserResponseDto;
+import com.threemeals.delivery.domain.user.entity.User;
+import com.threemeals.delivery.domain.user.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.IOException;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/oauth")
+@RequiredArgsConstructor
+public class OAuthController {
+    private final UserService userService;
+    private final AuthService authService;
+    private final MyInfoConfig myInfoConfig;
+    private final OAuthUserService oauthService;
+
+    @GetMapping("/my-info")
+    public ResponseEntity<UserResponseDto> getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        User user = userService.getUserById(userPrincipal.getId());
+        return ResponseEntity.ok(UserResponseDto.fromEntity(user));
+    }
+
+    @GetMapping("/login/success")
+    public ResponseEntity<OAuthResponseDto> loginSuccess(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return ResponseEntity.ok(new OAuthResponseDto(true, "Login successful",null));
+    }
+
+    @PostMapping("/login/failure")
+    public ResponseEntity<OAuthResponseDto> loginFailure() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new OAuthResponseDto(false, "Login failed",null));
+    }
+    @GetMapping("/login/naver")
+    public void oauthLogin(HttpServletResponse response) throws IOException {
+        // 네이버 인증 요청 URL 생성
+        String state = UUID.randomUUID().toString(); // CSRF 방지를 위한 상태 값
+        String authorizationUrl = UriComponentsBuilder
+                .fromUriString("https://nid.naver.com/oauth2.0/authorize")
+                .queryParam("response_type", "code")
+                .queryParam("client_id", myInfoConfig.getClientId())
+                .queryParam("redirect_uri", myInfoConfig.getRedirectUri())
+                .queryParam("state", state)
+                .toUriString();
+
+        // 리다이렉트
+        response.sendRedirect(authorizationUrl);
+    }
+
+    @GetMapping("/login/naver/callback")
+    public ResponseEntity<?> callback(
+            @RequestParam("code") String code,
+            @RequestParam("state") String state
+    ) {
+        String jwtToken = oauthService.verifyUserByToken(code, state);
+        if (jwtToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new OAuthResponseDto(false, "User not found, please sign up", null));
+        }
+        return ResponseEntity.ok(new OAuthResponseDto(true, "Login successful", jwtToken));
+    }
+
+    // 회원가입 엔드포인트
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignupRequestDto signupRequestDto) {
+        SignupResponseDto signupResponseDto = authService.createUser(signupRequestDto);
+        return ResponseEntity.ok(signupResponseDto);
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/test")
+    public String test() {
+        return "I am ADMIN";
+    }
+}

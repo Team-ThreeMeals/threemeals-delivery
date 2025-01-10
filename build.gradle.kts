@@ -66,6 +66,10 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt:0.9.1") // Java JWT library
     implementation("javax.xml.bind:jaxb-api:2.3.1") // XML document와 Java 객체 간 매핑 자동화
 
+    //OAuth
+    implementation ("org.springframework.boot:spring-boot-starter-oauth2-client")
+    implementation ("org.springframework.boot:spring-boot-starter-security")
+
 }
 
 tasks.withType<Test> {

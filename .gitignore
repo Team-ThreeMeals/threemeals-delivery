@@ -39,3 +39,6 @@ out/
 *.sql
 application*.yml
 application*.properties
+
+### secret-info ###
+myInfo.yml

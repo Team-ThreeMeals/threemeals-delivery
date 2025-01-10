@@ -9,8 +9,8 @@ public class Url {
     }
 
     public static final String[] WHITE_LIST = {
-        "/signup", "/signup/**", "/login", "/users"
-
+        "/signup", "/signup/**", "/login", "/users",
+        "/oauth/**","/*.ico"
     };
 
     public static final String COOKIE_PATH = "/api";
