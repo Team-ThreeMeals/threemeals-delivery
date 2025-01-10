@@ -1,8 +1,9 @@
-package com.threemeals.delivery.domain.store.entity;
+package com.threemeals.delivery.domain.storeLike.entity;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.threemeals.delivery.domain.common.entity.BaseEntity;
+import com.threemeals.delivery.domain.store.entity.Store;
 import com.threemeals.delivery.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -33,14 +34,23 @@ public class StoreLike extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "store_id", nullable = false)
-	private Store store;
+	private Store storeId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+	private User userId;
 
 	@Column(name = "is_active", nullable = false)
 	private Boolean isActive;
 
+	public StoreLike(Store storeId, User userId, Boolean isActive) {
+		this.storeId = storeId;
+		this.userId = userId;
+		this.isActive = isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
 }

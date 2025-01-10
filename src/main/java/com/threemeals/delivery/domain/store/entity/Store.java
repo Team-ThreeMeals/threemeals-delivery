@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.threemeals.delivery.domain.common.entity.BaseEntity;
+import com.threemeals.delivery.domain.store.exception.StoreAlreadyClosedException;
 import com.threemeals.delivery.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -74,6 +75,12 @@ public class Store extends BaseEntity {
 		this.deliveryTip = deliveryTip;
 		this.minOrderPrice = minOrderPrice;
 		isClosed = false;
+	}
+
+	public void validateIsClosed() {
+		if (isClosed) {
+			throw new StoreAlreadyClosedException();
+		}
 	}
 
 	public void update(String storeName, String storeProfileImgUrl, String address,

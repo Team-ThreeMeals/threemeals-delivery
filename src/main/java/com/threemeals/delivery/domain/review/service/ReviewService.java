@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.threemeals.delivery.config.error.ErrorCode;
 import com.threemeals.delivery.domain.common.exception.AccessDeniedException;
 import com.threemeals.delivery.domain.common.exception.NotFoundException;
-import com.threemeals.delivery.domain.menu.entity.OrderStatus;
 import com.threemeals.delivery.domain.order.entity.Order;
 import com.threemeals.delivery.domain.order.repository.OrderRepository;
 import com.threemeals.delivery.domain.review.dto.request.GetReviewRequestDto;
@@ -27,6 +26,7 @@ import com.threemeals.delivery.domain.store.exception.StoreAccessException;
 import com.threemeals.delivery.domain.review.repository.ReviewCommentRepository;
 import com.threemeals.delivery.domain.review.repository.ReviewRepository;
 import com.threemeals.delivery.domain.store.repository.StoreRepository;
+import com.threemeals.delivery.domain.order.entity.OrderStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,7 +43,7 @@ public class ReviewService {
 
 		Order order = orderRepository.findOrderByOrderIdAndUserId(requestDto.orderId(), userId);
 
-		if (order.getOrderStatus() != OrderStatus.DELIVERED) {
+		if (order.getStatus() != OrderStatus.COMPLETED) {
 			throw new ReviewNotAllowedException();
 		}
 

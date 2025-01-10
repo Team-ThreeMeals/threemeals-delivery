@@ -14,7 +14,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.threemeals.delivery.domain.menu.dto.response.MenuResponseDto;
-import com.threemeals.delivery.domain.menu.entity.QMenuOption;
 
 import jakarta.persistence.EntityManager;
 
@@ -27,6 +26,7 @@ public class MenuRepositoryImpl implements MenuRepositoryForQueryDSL {
 	}
 
 	// Store 도메인에 해당 로직이 없고, 내가 직접 만들기에는 충돌 우려가 나서, 임시로 만듦
+	// 메뉴 삭제 여부 검증 X. 해당 메서드 호출 로직에서 해줌.
 	@Override
 	public boolean existsByMenuIdAndOwnerId(Long menuId, Long ownerId) {
 		return queryFactory
