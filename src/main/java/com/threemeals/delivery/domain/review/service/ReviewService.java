@@ -23,7 +23,7 @@ import com.threemeals.delivery.domain.review.entity.Review;
 import com.threemeals.delivery.domain.review.entity.ReviewComment;
 import com.threemeals.delivery.domain.review.exception.RatingRangeException;
 import com.threemeals.delivery.domain.review.exception.ReviewNotAllowedException;
-import com.threemeals.delivery.domain.review.exception.StoreAccessException;
+import com.threemeals.delivery.domain.store.exception.StoreAccessException;
 import com.threemeals.delivery.domain.review.repository.ReviewCommentRepository;
 import com.threemeals.delivery.domain.review.repository.ReviewRepository;
 import com.threemeals.delivery.domain.store.repository.StoreRepository;

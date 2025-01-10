@@ -1,4 +1,4 @@
-package com.threemeals.delivery.domain.review.exception;
+package com.threemeals.delivery.domain.store.exception;
 
 import com.threemeals.delivery.config.error.ErrorCode;
 import com.threemeals.delivery.domain.common.exception.AccessDeniedException;
