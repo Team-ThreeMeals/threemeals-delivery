@@ -44,6 +44,8 @@ dependencies {
     // JPA
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
+    implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+
     // QueryDSL
     implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta") // Querydsl의 JPA 관련 기능 제공 (JPAQueryFactory, BooleanBuilder, PathBuilder ...)
     annotationProcessor("com.querydsl:querydsl-apt:5.1.0:jakarta") // QueryDSL APT(Annotation Processing Tool)로 컴파일 시점에 @Entity 애노테이션이 붙은 JPA 엔티티 클래스를 기반으로 Q 클래스를 생성
@@ -54,6 +56,15 @@ dependencies {
     testAnnotationProcessor("com.querydsl:querydsl-apt:5.1.0:jakarta")
     testAnnotationProcessor("jakarta.annotation:jakarta.annotation-api")
     testAnnotationProcessor("jakarta.persistence:jakarta.persistence-api")
+
+    // redis
+    implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+
+    // Jackson
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.15.2") // Jackson 버전에 맞게 변경
+
+
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
