@@ -116,4 +116,26 @@ class ReviewServiceTest {
 		assertEquals(mockReview.getContent(), responseDto.content());
 		assertEquals(mockReview.getRating(), responseDto.rating());
 	}
+
+	@Test
+	public void 배달완료_전에_리뷰_등록_시_예외발생 () {
+		// given
+		Long userId = 1L;
+		Long orderId = 1L;
+
+		User mockUser = createMockUser(userId);
+		User mockOwner = createMockOwner(2L);
+		Store mockStore = createMockStore(mockOwner, 1L);
+		Order mockOrder = createMockOrder(mockUser, mockStore, orderId, OrderStatus.DELIVERING);
+
+		ReviewRequestDto requestDto = new ReviewRequestDto(orderId, 3, "맛있다", "이미지주소");
+		when(orderRepository.findOrderByOrderIdAndUserId(requestDto.orderId(), userId)).thenReturn(mockOrder);
+
+		// when
+		ReviewNotAllowedException exception = assertThrows(ReviewNotAllowedException.class, () ->
+			reviewService.saveReview(requestDto, userId));
+
+		// then
+		assertEquals(ErrorCode.REVIEW_NOT_ALLOWED, exception.getErrorCode());
+	}
 }
