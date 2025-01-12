@@ -220,4 +220,28 @@ class ReviewServiceTest {
 		// then
 		assertEquals(ErrorCode.STORE_ACCESS_DENIED, exception.getErrorCode());
 	}
+
+	@Test
+	public void 리뷰_삭제_성공_테스트 () {
+		// given
+		Long userId = 1L;
+		Long reviewId = 1L;
+
+		User mockUser = createMockUser(userId);
+		User mockOwner = createMockOwner(1L);
+		Store mockStore = createMockStore(mockOwner, 1L);
+		Order mockOrder = createMockOrder(mockUser, mockStore, 1L, OrderStatus.COMPLETED);
+		Review mockReview = createMockReview(mockUser, mockStore, mockOrder);
+		ReflectionTestUtils.setField(mockReview, "id", reviewId);
+
+		given(reviewRepository.findReviewById(anyLong())).willReturn(mockReview);
+
+		// when
+		reviewService.deleteReview(userId, reviewId);
+
+		// then
+		assertTrue(mockReview.getIsDeleted());
+
+		verify(reviewRepository, times(1)).findReviewById(reviewId);
+	}
 }
