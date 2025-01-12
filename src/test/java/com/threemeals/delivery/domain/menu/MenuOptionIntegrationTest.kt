@@ -1,7 +1,8 @@
 package com.threemeals.delivery.domain.menu
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.threemeals.delivery.config.error.ErrorCode.*
+import com.threemeals.delivery.config.error.ErrorCode.ACCESS_DENIED
+import com.threemeals.delivery.config.error.ErrorCode.MENU_OPTION_DELETED
 import com.threemeals.delivery.config.jwt.TokenProvider
 import com.threemeals.delivery.config.util.Token.*
 import com.threemeals.delivery.domain.common.exception.AccessDeniedException
@@ -15,26 +16,30 @@ import com.threemeals.delivery.domain.menu.repository.MenuRepository
 import com.threemeals.delivery.domain.store.entity.Store
 import com.threemeals.delivery.domain.store.repository.StoreRepository
 import com.threemeals.delivery.domain.user.entity.Role
+import com.threemeals.delivery.domain.user.entity.Role.STORE_OWNER
+import com.threemeals.delivery.domain.user.entity.Role.USER
 import com.threemeals.delivery.domain.user.entity.User
 import com.threemeals.delivery.domain.user.repository.UserRepository
+import jakarta.persistence.EntityManager
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalTime
-import kotlin.math.log
-import kotlin.test.Test
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class MenuOptionIntegrationTest {
 
     @Autowired
@@ -58,11 +63,13 @@ class MenuOptionIntegrationTest {
     @Autowired
     lateinit var tokenProvider: TokenProvider
 
+
     @BeforeEach
     fun setup() {
         menuRepository.deleteAllInBatch()
         userRepository.deleteAllInBatch()
         storeRepository.deleteAllInBatch()
+        menuOptionRepository.deleteAllInBatch()
     }
 
     fun makeOwner(role: Role): User {
@@ -133,7 +140,7 @@ class MenuOptionIntegrationTest {
         val requestDto = makeMenuOptionRequestDto()
         val content = objectMapper.writeValueAsString(requestDto)
 
-        val mockOwner = makeOwner(Role.STORE_OWNER)
+        val mockOwner = makeOwner(STORE_OWNER)
         val mockStore = makeStore(mockOwner)
         val mockMenu = makeMenu(mockStore)
 
@@ -163,7 +170,7 @@ class MenuOptionIntegrationTest {
     @Test
     fun `메뉴 옵션 변경에 성공한다`() {
         // given
-        val mockOwner = makeOwner(role = Role.STORE_OWNER)
+        val mockOwner = makeOwner(role = STORE_OWNER)
         val mockStore = makeStore(mockOwner)
         val mockMenu = makeMenu(mockStore)
         val mockMenuOption = makeMenuOption(mockMenu)
@@ -197,7 +204,7 @@ class MenuOptionIntegrationTest {
     @Test
     fun `메뉴 옵션 삭제에 성공한다`() {
         // given
-        val mockOwner = makeOwner(role = Role.STORE_OWNER)
+        val mockOwner = makeOwner(role = STORE_OWNER)
         val mockStore = makeStore(mockOwner)
         val mockMenu = makeMenu(mockStore)
         val mockMenuOption = makeMenuOption(mockMenu)
@@ -223,7 +230,7 @@ class MenuOptionIntegrationTest {
     @Test
     fun `메뉴 옵션이 삭제 상태이면 수정에 실패한다`() {
         // given
-        val mockOwner = makeOwner(Role.STORE_OWNER)
+        val mockOwner = makeOwner(STORE_OWNER)
         val mockStore = makeStore(mockOwner)
         val mockMenu = makeMenu(mockStore)
         val mockMenuOption = makeMenuOption(mockMenu)
@@ -258,7 +265,7 @@ class MenuOptionIntegrationTest {
     @Test
     fun `사장님 계정이 아닌 상태에서 메뉴 데이터를 쓰거나 변경하려고 하면 예외가 발생한다`() {
         // given
-        val mockUser = makeOwner(Role.USER)
+        val mockUser = makeOwner(USER)
         val mockStore = makeStore(mockUser)
         val mockMenu = makeMenu(mockStore)
         val mockMenuOption = makeMenuOption(mockMenu)

@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.threemeals.delivery.domain.menu.entity.Category;
 import com.threemeals.delivery.domain.menu.entity.Menu;
@@ -23,6 +24,7 @@ import jakarta.persistence.EntityManager;
 
 // @ActiveProfiles("test")
 @DataJpaTest
+@Transactional
 class MenuRepositoryTest {
 
 	@Autowired

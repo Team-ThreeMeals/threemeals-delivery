@@ -2,8 +2,7 @@ package com.threemeals.delivery.domain.user
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.threemeals.delivery.config.PasswordEncoder
-import com.threemeals.delivery.config.error.ErrorCode
-import com.threemeals.delivery.config.error.ErrorCode.*
+import com.threemeals.delivery.config.error.ErrorCode.USER_DELETED
 import com.threemeals.delivery.config.jwt.TokenProvider
 import com.threemeals.delivery.config.util.Token.*
 import com.threemeals.delivery.domain.user.dto.request.DeleteUserRequestDto

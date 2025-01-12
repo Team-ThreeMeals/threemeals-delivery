@@ -2,9 +2,11 @@ package com.threemeals.delivery.domain.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.threemeals.delivery.config.PasswordEncoder
+import com.threemeals.delivery.config.error.ErrorCode.TOKEN_EXPIRED
+import com.threemeals.delivery.config.error.ErrorCode.USER_ALREADY_EXISTS
 import com.threemeals.delivery.config.jwt.TokenProvider
-import com.threemeals.delivery.config.error.ErrorCode.*
-import com.threemeals.delivery.config.util.Token.*
+import com.threemeals.delivery.config.util.Token.REFRESH_TOKEN_DURATION
+import com.threemeals.delivery.config.util.Token.REFRESH_TOKEN_TYPE
 import com.threemeals.delivery.domain.auth.dto.request.LoginRequestDto
 import com.threemeals.delivery.domain.auth.dto.request.SignupRequestDto
 import com.threemeals.delivery.domain.auth.dto.request.UpdateTokenRequestDto
@@ -30,7 +32,7 @@ import java.time.Duration
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class AuthIntegrationTestByKt {
+class AuthIntegrationTest {
 
     @Autowired
     lateinit var mockMvc: MockMvc

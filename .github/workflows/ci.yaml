@@ -1,12 +1,12 @@
 # 1. Workflow 이름 지정
 name: CI
 
-# 2. Workflow가 시작될 조건 지정
+# 2. `Workflow`가 시작될 조건 지정
 on:
   push:
-    branches: [ main, dev, seonguk ]
+#    branches: [ main, dev, seonguk ]
   pull_request:
-    branches: [ main, dev ]
+#    branches: [ main, dev ]
 
 jobs:
   build:
