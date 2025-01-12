@@ -49,10 +49,11 @@ public class MenuApiController {
 	@StoreOwnerOnly
 	@PostMapping("/menus")
 	public ResponseEntity<MenuResponseDto> addNewMenu(
+		@RequestParam Long storeId,
 		@Authentication UserPrincipal userPrincipal,
 		@Valid @RequestBody MenuRequestDto requestDto) {
 
-		MenuResponseDto response = menuService.addMenu(userPrincipal.getUserId(), requestDto);
+		MenuResponseDto response = menuService.addMenu(storeId, userPrincipal.getUserId(), requestDto);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(response);
 	}

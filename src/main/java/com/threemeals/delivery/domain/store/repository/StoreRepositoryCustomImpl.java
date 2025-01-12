@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.threemeals.delivery.domain.store.entity.QStore;
 import com.threemeals.delivery.domain.store.entity.Store;
@@ -40,18 +41,17 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
 			.selectFrom(store)
 			.where(store.storeName.contains(storeName)
 				.and(store.isClosed.eq(false)))
-			.orderBy(store.id.desc())
+			.orderBy(store.updatedAt.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
 
-		long total = queryFactory
+		JPAQuery<Long> countQuery = queryFactory
 			.select(store.count())
 			.from(store)
 			.where(store.storeName.contains(storeName)
-				.and(store.isClosed.eq(false)))
-			.fetchOne();
+				.and(store.isClosed.eq(false)));
 
-		return PageableExecutionUtils.getPage(content, pageable, () -> total);
+		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 	}
 }
