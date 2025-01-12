@@ -1,5 +1,6 @@
 package com.threemeals.delivery.domain.store.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ import com.threemeals.delivery.domain.user.annotation.StoreOwnerOnly;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-
+@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping("/stores")
@@ -38,6 +39,7 @@ public class StoreApiController {
 		@Valid @RequestBody SaveStoreRequestDto requestDto,
 		@Authentication UserPrincipal userPrincipal
 	) {
+		log.info("가게 생성 시도, name={} tip ={}",requestDto.storeName(),requestDto.deliveryTip());
 		Long userId = userPrincipal.getUserId();
 
 		StoreResponseDto responseDto = storeService.saveStore(requestDto, userId);

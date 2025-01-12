@@ -4,6 +4,7 @@ import com.threemeals.delivery.config.MyInfoConfig;
 import com.threemeals.delivery.config.jwt.TokenProvider;
 import com.threemeals.delivery.domain.auth.dto.request.LoginRequestDto;
 import com.threemeals.delivery.domain.auth.dto.request.SignupRequestDto;
+import com.threemeals.delivery.domain.auth.dto.response.LoginResponseDto;
 import com.threemeals.delivery.domain.auth.service.AuthService;
 import com.threemeals.delivery.domain.oauth.dto.NaverUserInfoDto;
 import com.threemeals.delivery.domain.user.entity.User;
@@ -20,7 +21,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
-import static com.threemeals.delivery.config.util.Token.ACCESS_TOKEN_DURATION;
+import static com.threemeals.delivery.config.util.Token.*;
+import static com.threemeals.delivery.config.util.Token.REFRESH_TOKEN_DURATION;
 
 @Slf4j
 @Service
@@ -34,21 +36,24 @@ public class OAuthUserService extends DefaultOAuth2UserService {
     private final TokenProvider tokenProvider;
     private final AuthService authService;
 
-    public String verifyUserByToken(String code, String state) {
-        String accessToken = requestAccessToken(code, state);
-        if (accessToken == null) {
+    public LoginResponseDto verifyUserByToken(String code, String state) {
+        String naverAccessToken = requestAccessToken(code, state);
+        if (naverAccessToken == null) {
             log.error("Failed to obtain access token");
             return null;
         }
 
-        NaverUserInfoDto userInfo = requestUserInfo(accessToken);
+        NaverUserInfoDto userInfo = requestUserInfo(naverAccessToken);
         if (!userInfo.isValid()) {
             log.error("Invalid user info received");
             return null;
         }
 
         User user = findUserOrSignUp(userInfo);
-        return tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
+        String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_TYPE, ACCESS_TOKEN_DURATION);
+        String refreshToken = tokenProvider.generateToken(user, REFRESH_TOKEN_TYPE, REFRESH_TOKEN_DURATION);
+
+        return new LoginResponseDto(accessToken, refreshToken);
     }
 
     private String requestAccessToken(String code, String state) {

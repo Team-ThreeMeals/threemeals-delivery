@@ -41,11 +41,12 @@ public class OrderController {
         return ResponseEntity.ok(orderDetails);
     }
 
-    @PutMapping("/status")
+    @PutMapping("/status/{orderId}")
     public ResponseEntity<MessageResponse> updateOrderStatus(
+            @PathVariable Long orderId,
             @Authentication UserPrincipal userPrincipal,
             @RequestBody UpdateOrderStatusRequestDto requestDto) {
-        orderService.updateOrderStatus(userPrincipal.getUserId(), requestDto);
+        orderService.updateOrderStatus(orderId, requestDto);
         return ResponseEntity.ok(new MessageResponse("Order status updated successfully."));
     }
 

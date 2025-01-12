@@ -2,6 +2,7 @@ package com.threemeals.delivery.domain.oauth;
 
 import com.threemeals.delivery.config.MyInfoConfig;
 import com.threemeals.delivery.domain.auth.dto.request.SignupRequestDto;
+import com.threemeals.delivery.domain.auth.dto.response.LoginResponseDto;
 import com.threemeals.delivery.domain.auth.dto.response.SignupResponseDto;
 import com.threemeals.delivery.domain.auth.service.AuthService;
 import com.threemeals.delivery.domain.oauth.dto.OAuthResponseDto;
@@ -71,11 +72,7 @@ public class OAuthController {
             @RequestParam("code") String code,
             @RequestParam("state") String state
     ) {
-        String jwtToken = oauthService.verifyUserByToken(code, state);
-        if (jwtToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new OAuthResponseDto(false, "User not found, please sign up", null));
-        }
-        return ResponseEntity.ok(new OAuthResponseDto(true, "Login successful", jwtToken));
+        LoginResponseDto response = oauthService.verifyUserByToken(code, state);
+        return ResponseEntity.ok(response);
     }
 }

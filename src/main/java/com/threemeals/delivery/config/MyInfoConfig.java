@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+
 @Getter
 @Configuration
 @PropertySource(value = "classpath:myInfo.yml", factory = YamlPropertySourceFactory.class)
@@ -26,6 +27,12 @@ public class MyInfoConfig {
 
     @Value("${db.pw}")
     private String pw;
+
+    @Value("${redis.host}")
+    private String host;
+
+    @Value("${redis.port}")
+    private String port;
 }
 
 

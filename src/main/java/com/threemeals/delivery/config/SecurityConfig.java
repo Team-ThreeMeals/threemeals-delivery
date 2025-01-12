@@ -34,7 +34,7 @@ public class SecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)  // JWT 필터 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/css/**", "/images/**", "/js/**").permitAll()
+                        .requestMatchers("/**", "/css/**", "/images/**", "/js/**").permitAll()
                         .requestMatchers("/oauth/**", "/oauth/login/**").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -3,6 +3,7 @@ package com.threemeals.delivery.domain.auth.service;
 import static com.threemeals.delivery.config.error.ErrorCode.*;
 import static com.threemeals.delivery.config.util.Token.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +23,7 @@ import com.threemeals.delivery.domain.user.repository.UserRepository;
 import com.threemeals.delivery.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -57,6 +58,7 @@ public class AuthService {
 	public LoginResponseDto authenticate(LoginRequestDto requestDto) {
 
 		User findUser = userService.getUserByEmail(requestDto.email());
+		log.info("유저 등급: {}", findUser.getRole());
 
 		if (passwordEncoder.matches(requestDto.password(), findUser.getPassword()) == false) {
 			throw new AuthenticationException(INVALID_CREDENTIALS);
