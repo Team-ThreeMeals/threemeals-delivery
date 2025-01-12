@@ -42,25 +42,28 @@ public class OAuthController {
         return ResponseEntity.ok(new OAuthResponseDto(true, "Login successful",null));
     }
 
-    @PostMapping("/login/failure")
+    @PostMapping("/login/fail")
     public ResponseEntity<OAuthResponseDto> loginFailure() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new OAuthResponseDto(false, "Login failed",null));
     }
     @GetMapping("/login/naver")
     public void oauthLogin(HttpServletResponse response) throws IOException {
-        // 네이버 인증 요청 URL 생성
-        String state = UUID.randomUUID().toString(); // CSRF 방지를 위한 상태 값
-        String authorizationUrl = UriComponentsBuilder
+        String state = UUID.randomUUID().toString();
+        String authorizationUrl = generateOAuthRequestUrlAndSetParam(state);
+
+        // 리다이렉트
+        response.sendRedirect(authorizationUrl);
+    }
+
+    private String generateOAuthRequestUrlAndSetParam(String state) {
+        return UriComponentsBuilder
                 .fromUriString("https://nid.naver.com/oauth2.0/authorize")
                 .queryParam("response_type", "code")
                 .queryParam("client_id", myInfoConfig.getClientId())
                 .queryParam("redirect_uri", myInfoConfig.getRedirectUri())
                 .queryParam("state", state)
                 .toUriString();
-
-        // 리다이렉트
-        response.sendRedirect(authorizationUrl);
     }
 
     @GetMapping("/login/naver/callback")
@@ -74,19 +77,5 @@ public class OAuthController {
                     .body(new OAuthResponseDto(false, "User not found, please sign up", null));
         }
         return ResponseEntity.ok(new OAuthResponseDto(true, "Login successful", jwtToken));
-    }
-
-    // 회원가입 엔드포인트
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupRequestDto signupRequestDto) {
-        SignupResponseDto signupResponseDto = authService.createUser(signupRequestDto);
-        return ResponseEntity.ok(signupResponseDto);
-    }
-
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/test")
-    public String test() {
-        return "I am ADMIN";
     }
 }

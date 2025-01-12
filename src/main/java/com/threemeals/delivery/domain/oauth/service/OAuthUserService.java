@@ -5,28 +5,20 @@ import com.threemeals.delivery.config.jwt.TokenProvider;
 import com.threemeals.delivery.domain.auth.dto.request.LoginRequestDto;
 import com.threemeals.delivery.domain.auth.dto.request.SignupRequestDto;
 import com.threemeals.delivery.domain.auth.service.AuthService;
-import com.threemeals.delivery.domain.oauth.dto.NaverOAuth2UserInfo;
 import com.threemeals.delivery.domain.oauth.dto.NaverUserInfoDto;
-import com.threemeals.delivery.domain.oauth.dto.OAuth2UserInfo;
-import com.threemeals.delivery.domain.oauth.util.UserPrincipal;
-import com.threemeals.delivery.domain.user.entity.Role;
 import com.threemeals.delivery.domain.user.entity.User;
 import com.threemeals.delivery.domain.user.repository.UserRepository;
-import com.threemeals.delivery.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static com.threemeals.delivery.config.util.Token.ACCESS_TOKEN_DURATION;
 
@@ -34,80 +26,45 @@ import static com.threemeals.delivery.config.util.Token.ACCESS_TOKEN_DURATION;
 @Service
 @RequiredArgsConstructor
 public class OAuthUserService extends DefaultOAuth2UserService {
+    private static final String NAVER_TOKEN_URL = "https://nid.naver.com/oauth2.0/token";
+    private static final String NAVER_USER_INFO_URL = "https://openapi.naver.com/v1/nid/me";
 
     private final UserRepository userRepository;
     private final MyInfoConfig myInfoConfig;
     private final TokenProvider tokenProvider;
-    private final UserService userService;
     private final AuthService authService;
 
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oauth2User = super.loadUser(userRequest);
+    public String verifyUserByToken(String code, String state) {
+        String accessToken = requestAccessToken(code, state);
+        if (accessToken == null) {
+            log.error("Failed to obtain access token");
+            return null;
+        }
 
+        NaverUserInfoDto userInfo = requestUserInfo(accessToken);
+        if (!userInfo.isValid()) {
+            log.error("Invalid user info received");
+            return null;
+        }
+
+        User user = findUserOrSignUp(userInfo);
+        return tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
+    }
+
+    private String requestAccessToken(String code, String state) {
         try {
-            return processOAuth2User(userRequest, oauth2User);
-        } catch (Exception e) {
-            throw new OAuth2AuthenticationException("Failed to process OAuth2 user");
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<MultiValueMap<String, String>> request = createTokenRequest(code, state);
+            ResponseEntity<Map> response = restTemplate.postForEntity(NAVER_TOKEN_URL, request, Map.class);
+
+            return extractAccessToken(response);
+        } catch (RestClientException e) {
+            log.error("Failed to request access token", e);
+            return null;
         }
     }
 
-    private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oauth2User) {
-        OAuth2UserInfo oauth2UserInfo = getOAuth2UserInfo(userRequest, oauth2User);
-
-        Optional<User> userOptional = userRepository.findByEmail(oauth2UserInfo.getEmail());
-        User user;
-
-        if (userOptional.isPresent()) {
-            user = userOptional.get();
-            // address는 기존 값 유지하거나, 필요한 경우 OAuth 정보에서 가져온 값으로 설정
-            user.update(oauth2UserInfo.getName());
-            user = userRepository.save(user);
-        } else {
-            user = createUser(oauth2UserInfo);
-        }
-
-        return UserPrincipal.create(user, oauth2User.getAttributes());
-    }
-
-    private OAuth2UserInfo getOAuth2UserInfo(OAuth2UserRequest userRequest, OAuth2User oauth2User) {
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-
-        Map<String, Object> attributes = oauth2User.getAttributes();
-        if ("naver".equals(registrationId)) {
-            return new NaverOAuth2UserInfo((Map<String, Object>) attributes.get("response"));
-        }
-
-        throw new OAuth2AuthenticationException("Unsupported Provider");
-    }
-
-    private User createUser(OAuth2UserInfo oauth2UserInfo) {
-        return User.builder()
-                .username(oauth2UserInfo.getName())
-                .email(oauth2UserInfo.getEmail())
-                .password("") // OAuth 로그인의 경우 비밀번호 불필요
-                .role(Role.USER)
-                .address("") // 초기 주소는 빈 문자열 또는 기본값 설정
-                .build();
-    }
-    public String verifyUserByToken(String code, String state){
-        RestTemplate restTemplate = new RestTemplate();
-        String accessToken = getAccessToken(code, state,restTemplate);
-        if (accessToken == null) return null;
-        NaverUserInfoDto userInfo = getUserInfo(accessToken,restTemplate);
-        String userEmail = userInfo.getEmail();
-        if (userEmail == null) return null;
-        // DB에서 사용자 확인
-        Optional<User> userOptional = userRepository.findByEmail(userEmail);//
-        if (userOptional.isEmpty()) {
-            authService.createUser(new SignupRequestDto(userEmail, userInfo.getName(), "", userInfo.getProfileImage(), ""));
-            authService.authenticate(new LoginRequestDto(userEmail,""));
-        }
-        User user = userRepository.findByEmail(userEmail).get();//
-        String token = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
-        return token;
-    }
-    private String getAccessToken(String code, String state,RestTemplate restTemplate) {
+    private HttpEntity<MultiValueMap<String, String>> createTokenRequest(String code, String state) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -118,34 +75,63 @@ public class OAuthUserService extends DefaultOAuth2UserService {
         params.add("code", code);
         params.add("state", state);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-        ResponseEntity<Map> response = restTemplate.postForEntity(
-                "https://nid.naver.com/oauth2.0/token", request, Map.class);
-
-        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            return (String) response.getBody().get("access_token");
-        }
-
-        return null;
+        return new HttpEntity<>(params, headers);
     }
-    private NaverUserInfoDto getUserInfo(String accessToken, RestTemplate restTemplate) {
+
+    private String extractAccessToken(ResponseEntity<Map> response) {
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
+            return null;
+        }
+        return (String) response.getBody().get("access_token");
+    }
+
+    private NaverUserInfoDto requestUserInfo(String accessToken) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<Void> request = createUserInfoRequest(accessToken);
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    NAVER_USER_INFO_URL,
+                    HttpMethod.GET,
+                    request,
+                    Map.class
+            );
+
+            return extractUserInfo(response);
+        } catch (RestClientException e) {
+            log.error("Failed to request user info", e);
+            return NaverUserInfoDto.empty();
+        }
+    }
+
+    private HttpEntity<Void> createUserInfoRequest(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
+        return new HttpEntity<>(headers);
+    }
 
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        ResponseEntity<Map> response = restTemplate.exchange(
-                "https://openapi.naver.com/v1/nid/me", HttpMethod.GET, entity, Map.class);
-
-        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            Map<String, Object> responseData = (Map<String, Object>) response.getBody().get("response");
-
-            String email = (String) responseData.get("email");
-            String name = (String) responseData.get("name");
-            String profileImage = (String) responseData.get("profile_image");
-
-            return new NaverUserInfoDto(email, name, profileImage);
+    private NaverUserInfoDto extractUserInfo(ResponseEntity<Map> response) {
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
+            return NaverUserInfoDto.empty();
         }
 
-        return null; // 실패 시 null 반환
+        Map<String, Object> responseData = (Map<String, Object>) response.getBody().get("response");
+        return NaverUserInfoDto.builder()
+                .email((String) responseData.get("email"))
+                .name((String) responseData.get("name"))
+                .profileImage((String) responseData.get("profile_image"))
+                .build();
+    }
+
+    private User findUserOrSignUp(NaverUserInfoDto userInfo) {
+        return userRepository.findByEmail(userInfo.getEmail())
+                .orElseGet(() -> createNewUser(userInfo));
+    }
+    private User createNewUser(NaverUserInfoDto userInfo) {
+        SignupRequestDto signupRequest = new SignupRequestDto(userInfo.getEmail(), userInfo.getName(), "", userInfo.getProfileImage(), "") ;
+        authService.createUser(signupRequest);
+        authService.authenticate(new LoginRequestDto(userInfo.getEmail(), ""));
+
+        return userRepository.findByEmail(userInfo.getEmail())
+                .orElseThrow(() -> new RuntimeException("Failed to create user"));
     }
 }
