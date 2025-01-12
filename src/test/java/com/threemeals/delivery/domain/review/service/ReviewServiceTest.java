@@ -270,5 +270,38 @@ class ReviewServiceTest {
 
 		verify(reviewRepository, times(1)).findReviewById(reviewId);
 	}
+
+	@Test
+	public void 댓글_삭제_성공_테스트 () {
+	    // given
+		Long ownerId = 1L;
+		Long reviewId = 1L;
+
+		User mockUser = createMockUser(1L);
+		User mockOwner = createMockOwner(ownerId);
+		Store mockStore = createMockStore(mockOwner, 1L);
+		Order mockOrder = createMockOrder(mockUser, mockStore, 1L, OrderStatus.COMPLETED);
+		Review mockReview = createMockReview(mockUser, mockStore, mockOrder);
+		ReflectionTestUtils.setField(mockReview, "id", reviewId);
+
+		ReviewComment mockReviewComment =
+			ReviewComment.builder()
+				.owner(mockOwner)
+				.review(mockReview)
+				.content("감사합니다.")
+				.build();
+		ReflectionTestUtils.setField(mockReviewComment, "createdAt", LocalDateTime.now());
+
+		given(reviewCommentRepository.findReviewComment(anyLong())).willReturn(mockReviewComment);
+
+	    // when
+		reviewService.deleteReviewComment(ownerId, reviewId);
+
+	    // then
+		assertTrue(mockReviewComment.getIsDeleted());
+
+		verify(reviewCommentRepository, times(1)).findReviewComment(reviewId);
+	}
+
 	
 }
