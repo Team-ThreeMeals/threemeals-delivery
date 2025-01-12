@@ -4,10 +4,9 @@ name: CI
 # 2. Workflow가 시작될 조건 지정
 on:
   push:
-    branches: [main, dev, seonguk]
+    branches: [ main, dev, seonguk ]
   pull_request:
-    branches: [main, dev]
-
+    branches: [ main, dev ]
 
 jobs:
   build:
@@ -15,6 +14,15 @@ jobs:
     # 4. 실행 스텝 지정
     steps:
       - uses: actions/checkout@v3 # uses <- 지정한 리포지터리를 확인하고 코드에 대한 작업 실행
+
+      # Gradle 의존성 캐싱
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - uses: actions/setup-java@v3
         with:
@@ -41,7 +49,23 @@ jobs:
           done
         shell: bash
 
+      - name: Debug Secrets
+        env:
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: |
+          echo "REDIS_HOST: $REDIS_HOST"
+          echo "REDIS_PORT: $REDIS_PORT"
+          echo "JWT_ISSUER: $JWT_ISSUER"
+          echo "JWT_SECRET_KEY: $JWT_SECRET_KEY"
+
       - name: Run tests
         env:
           SPRING_PROFILES_ACTIVE: test
-        run: ./gradlew test --info
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: ./gradlew test
