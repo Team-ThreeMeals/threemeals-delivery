@@ -49,18 +49,6 @@ jobs:
           done
         shell: bash
 
-      - name: Debug Secrets
-        env:
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
-          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
-          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        run: |
-          echo "REDIS_HOST: $REDIS_HOST"
-          echo "REDIS_PORT: $REDIS_PORT"
-          echo "JWT_ISSUER: $JWT_ISSUER"
-          echo "JWT_SECRET_KEY: $JWT_SECRET_KEY"
-
       - name: Run tests
         env:
           SPRING_PROFILES_ACTIVE: test
@@ -68,4 +56,4 @@ jobs:
           REDIS_PORT: ${{ secrets.REDIS_PORT }}
           JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        run: ./gradlew test
+        run: ./gradlew test --info
