@@ -10,9 +10,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.expression.AccessException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.threemeals.delivery.config.error.ErrorCode;
+import com.threemeals.delivery.domain.common.exception.AccessDeniedException;
 import com.threemeals.delivery.domain.order.entity.OrderStatus;
 import com.threemeals.delivery.domain.order.entity.Order;
 import com.threemeals.delivery.domain.order.repository.OrderRepository;
@@ -244,4 +246,29 @@ class ReviewServiceTest {
 
 		verify(reviewRepository, times(1)).findReviewById(reviewId);
 	}
+	
+	@Test
+	public void 리뷰_삭제_실패_태스트 () {
+	    // given
+	    Long userId = 1L;
+		Long reviewId = 1L;
+
+		User mockUser = createMockUser(2L);
+		User mockOwner = createMockOwner(1L);
+		Store mockStore = createMockStore(mockOwner, 1L);
+		Order mockOrder = createMockOrder(mockUser, mockStore, 1L, OrderStatus.COMPLETED);
+		Review mockReview = createMockReview(mockUser, mockStore, mockOrder);
+		ReflectionTestUtils.setField(mockReview, "id", reviewId);
+
+		given(reviewRepository.findReviewById(reviewId)).willReturn(mockReview);
+
+		// when
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> reviewService.deleteReview(userId, reviewId));
+
+	    // then
+		assertEquals(ErrorCode.REVIEW_ACCESS_DENIED, exception.getErrorCode());
+
+		verify(reviewRepository, times(1)).findReviewById(reviewId);
+	}
+	
 }
