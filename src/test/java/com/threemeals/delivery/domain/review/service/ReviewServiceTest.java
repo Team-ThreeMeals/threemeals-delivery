@@ -303,5 +303,36 @@ class ReviewServiceTest {
 		verify(reviewCommentRepository, times(1)).findReviewComment(reviewId);
 	}
 
-	
+	@Test
+	public void 삭제하려는_댓글이_본인_댓글이_아닐때_예외발생 () {
+	    // given
+		Long ownerId = 1L;
+		Long reviewId = 1L;
+
+		User mockUser = createMockUser(1L);
+		User mockOwner = createMockOwner(2L);
+		Store mockStore = createMockStore(mockOwner, 1L);
+		Order mockOrder = createMockOrder(mockUser, mockStore, 1L, OrderStatus.COMPLETED);
+		Review mockReview = createMockReview(mockUser, mockStore, mockOrder);
+		ReflectionTestUtils.setField(mockReview, "id", reviewId);
+
+		ReviewComment mockReviewComment =
+			ReviewComment.builder()
+				.owner(mockOwner)
+				.review(mockReview)
+				.content("감사합니다.")
+				.build();
+		ReflectionTestUtils.setField(mockReviewComment, "createdAt", LocalDateTime.now());
+
+		given(reviewCommentRepository.findReviewComment(anyLong())).willReturn(mockReviewComment);
+
+		// when
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> reviewService.deleteReviewComment(ownerId, reviewId));
+
+		// then
+		assertEquals(ErrorCode.COMMENT_ACCESS_DENIED, exception.getErrorCode());
+
+		verify(reviewCommentRepository, times(1)).findReviewComment(reviewId);
+	}
+
 }
