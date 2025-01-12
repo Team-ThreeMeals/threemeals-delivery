@@ -1,7 +1,7 @@
 package com.threemeals.delivery.domain.review.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
 
@@ -26,6 +26,7 @@ import com.threemeals.delivery.domain.review.exception.ReviewNotAllowedException
 import com.threemeals.delivery.domain.review.repository.ReviewCommentRepository;
 import com.threemeals.delivery.domain.review.repository.ReviewRepository;
 import com.threemeals.delivery.domain.store.entity.Store;
+import com.threemeals.delivery.domain.store.exception.StoreAccessException;
 import com.threemeals.delivery.domain.user.entity.Role;
 import com.threemeals.delivery.domain.user.entity.User;
 
@@ -189,5 +190,34 @@ class ReviewServiceTest {
 		// then
 		assertNotNull(responseDto);
 		assertEquals(mockReviewComment.getContent(), responseDto.content());
+	}
+
+	@Test
+	public void 댓글_달려는_리뷰가_본인_가게가_아닐때_예외발생 () {
+		// given
+		Long ownerId = 1L;
+		Long reviewId = 1L;
+
+		User mockUser = createMockUser(1L);
+
+		// 다른 owner의 가게
+		User mockOwner = createMockOwner(2L);
+		Store mockStore = createMockStore(mockOwner, 1L);
+
+		Order mockOrder = createMockOrder(mockUser, mockStore, 1L, OrderStatus.COMPLETED);
+
+		Review mockReview = createMockReview(mockUser, mockStore, mockOrder);
+		ReflectionTestUtils.setField(mockReview, "id", reviewId);
+
+		ReviewCommentRequestDto requestDto = new ReviewCommentRequestDto(reviewId, "감사합니다");
+
+		given(reviewRepository.findReviewById(anyLong())).willReturn(mockReview);
+
+		// when
+		StoreAccessException exception = assertThrows(StoreAccessException.class, () ->
+			reviewService.saveReviewComment(requestDto, ownerId));
+
+		// then
+		assertEquals(ErrorCode.STORE_ACCESS_DENIED, exception.getErrorCode());
 	}
 }
