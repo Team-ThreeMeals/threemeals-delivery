@@ -35,6 +35,7 @@ public class OrderController {
 
     @PutMapping("/status/{orderId}")
     public ResponseEntity<MessageResponse> updateOrderStatus(
+            @PathVariable Long orderId,
             @Authentication UserPrincipal userPrincipal,
             @PathVariable Long orderId,
             @RequestBody UpdateOrderStatusRequestDto requestDto) {

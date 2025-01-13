@@ -1,0 +1,59 @@
+# 1. Workflow 이름 지정
+name: CI
+
+# 2. `Workflow`가 시작될 조건 지정
+on:
+  push:
+#    branches: [ main, dev, seonguk ]
+  pull_request:
+#    branches: [ main, dev ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 3. 실행 환경 지정
+    # 4. 실행 스텝 지정
+    steps:
+      - uses: actions/checkout@v3 # uses <- 지정한 리포지터리를 확인하고 코드에 대한 작업 실행
+
+      # Gradle 의존성 캐싱
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Grant execute permission for gradlew # name <- 스텝의 이름
+        run: chmod +x gradlew
+
+      - name: Start Redis container
+        run: |
+          docker run --name redis -d -p 6379:6379 redis:latest
+          docker ps
+
+      - name: Wait for Redis to start
+        run: |
+          for i in {1..10}; do
+            if docker exec redis redis-cli ping | grep -q "PONG"; then
+              echo "Redis is up and running!";
+              break;
+            fi
+            echo "Waiting for Redis to be ready...";
+            sleep 2;
+          done
+        shell: bash
+
+      - name: Run tests
+        env:
+          SPRING_PROFILES_ACTIVE: test
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: ./gradlew test --info

@@ -1,0 +1,13 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true # SQL 포맷팅 활성화
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+
+
+jwt:
+  issuer: ${JWT_ISSUER}
+  secret-key: ${JWT_SECRET_KEY}

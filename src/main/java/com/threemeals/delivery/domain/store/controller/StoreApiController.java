@@ -1,5 +1,6 @@
 package com.threemeals.delivery.domain.store.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ import com.threemeals.delivery.domain.user.annotation.StoreOwnerOnly;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-
+@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping("/stores")
@@ -38,6 +39,7 @@ public class StoreApiController {
 		@Valid @RequestBody SaveStoreRequestDto requestDto,
 		@Authentication UserPrincipal userPrincipal
 	) {
+		log.info("가게 생성 시도, name={} tip ={}",requestDto.storeName(),requestDto.deliveryTip());
 		Long userId = userPrincipal.getUserId();
 
 		StoreResponseDto responseDto = storeService.saveStore(requestDto, userId);
@@ -58,6 +60,7 @@ public class StoreApiController {
 		return ResponseEntity.ok(stores);
 	}
 
+	// 단건 조회 (가게 ID로 조회하면 메뉴랑 같이 조회)
 	@GetMapping("/{storeId}")
 	public ResponseEntity<StoreDetailResponseDto> getStoreWithMenus(
 		@PathVariable Long storeId,
@@ -77,7 +80,7 @@ public class StoreApiController {
 		@Valid @RequestBody SaveStoreRequestDto requestDto,
 		@Authentication UserPrincipal userPrincipal
 	) {
-		Long userId = userPrincipal.getUserId(); // 현재 로그인한 사용자 ID
+		Long userId = userPrincipal.getUserId();
 		StoreResponseDto updatedStore = storeService.updateStore(storeId, requestDto, userId);
 		return ResponseEntity.ok(updatedStore);
 	}
@@ -88,7 +91,7 @@ public class StoreApiController {
 		@PathVariable Long storeId,
 		@Authentication UserPrincipal userPrincipal
 	) {
-		Long userId = userPrincipal.getUserId(); // 현재 로그인한 사용자 ID
+		Long userId = userPrincipal.getUserId();
 		storeService.deleteStore(storeId, userId);
 		return ResponseEntity.noContent().build();
 	}

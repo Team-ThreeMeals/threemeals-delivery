@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "user")
+@Table(name = "users")
 public class User extends BaseEntity {
 
 	@Id
@@ -56,6 +56,11 @@ public class User extends BaseEntity {
 		this.address = address;
 		this.profileImgUrl = profileImgUrl;
 		isDeleted = false;
+	}
+
+	public void update(String username) {
+		validateIsDeleted();  // 삭제된 유저인지 먼저 체크
+		this.username = username;
 	}
 
 	public void validateIsDeleted() {

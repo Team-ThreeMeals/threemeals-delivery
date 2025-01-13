@@ -70,11 +70,11 @@ public class Menu extends BaseEntity {
 	}
 
 	public void updateMe(MenuRequestDto requestDto) {
-		this.category = Category.of(requestDto.category());
-		this.menuName = requestDto.menuName();
-		this.description = requestDto.description();
-		this.price = requestDto.price();
-		this.menuImgUrl = requestDto.menuImgUrl();
+		category = Category.of(requestDto.category());
+		menuName = requestDto.menuName();
+		description = requestDto.description();
+		price = requestDto.price();
+		menuImgUrl = requestDto.menuImgUrl();
 	}
 
 	public void setStore(Store store) {
