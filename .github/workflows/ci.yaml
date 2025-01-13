@@ -56,4 +56,6 @@ jobs:
           REDIS_PORT: ${{ secrets.REDIS_PORT }}
           JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
         run: ./gradlew test --info

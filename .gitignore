@@ -42,4 +42,4 @@ src/test/resources/application.yml
 application*.properties
 
 ### secret-info ###
-myInfo.yml
+src/main/resources/myInfo.yml

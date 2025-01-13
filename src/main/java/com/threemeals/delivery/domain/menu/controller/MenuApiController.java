@@ -36,7 +36,7 @@ public class MenuApiController {
 	@GetMapping("/menus")
 	public ResponseEntity<Page<MenuResponseDto>> getStoreAllMenus(
 		@RequestParam Long storeId,
-		@RequestParam(defaultValue = "1") int page,
+		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size) {
 
 		Pageable pageable = PageRequest.of(page, size); // 이것도 1페이부터 시작하게 하려면 별도 DTO 객체 만들어야 할 듯.
