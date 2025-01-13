@@ -67,10 +67,10 @@ public class MenuOption extends BaseEntity {
 	}
 
 	public void updateMe(MenuOptionRequestDto requestDto) {
-		this.menuOptionName = requestDto.menuOptionName();
-		this.description = requestDto.description();
-		this.menuOptionPrice = requestDto.menuOptionPrice();
-		this.menuOptionImgUrl = requestDto.menuOptionImgUrl();
+		menuOptionName = requestDto.menuOptionName();
+		description = requestDto.description();
+		menuOptionPrice = requestDto.menuOptionPrice();
+		menuOptionImgUrl = requestDto.menuOptionImgUrl();
 	}
 
 	public void validateIsDeleted() {

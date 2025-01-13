@@ -1,4 +1,4 @@
-package com.threemeals.delivery.aspect;
+package com.threemeals.delivery.domain.order.aspect;
 
 import com.threemeals.delivery.domain.order.entity.OrderStatus;
 import com.threemeals.delivery.domain.order.dto.response.OrderResponseDto;
