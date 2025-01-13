@@ -7,13 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.threemeals.delivery.config.PasswordEncoder;
 import com.threemeals.delivery.config.error.ErrorCode;
-import com.threemeals.delivery.config.jwt.TokenProvider;
 import com.threemeals.delivery.domain.auth.dto.request.SignupRequestDto;
 import com.threemeals.delivery.domain.auth.dto.response.SignupResponseDto;
 import com.threemeals.delivery.domain.common.exception.EntityAlreadyExistsException;
