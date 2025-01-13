@@ -54,4 +54,27 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
 
 		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 	}
+
+	@Override
+	public Page<Store> findByIsClosedFalse(Pageable pageable) {
+		QStore store = QStore.store;
+
+		// 데이터 조회
+		List<Store> content = queryFactory
+			.selectFrom(store)
+			.where(store.isClosed.eq(false))
+			.orderBy(store.updatedAt.desc()) // 정렬 기준 (예: 업데이트 시간 내림차순)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		// 전체 카운트 쿼리
+		JPAQuery<Long> countQuery = queryFactory
+			.select(store.count())
+			.from(store)
+			.where(store.isClosed.eq(false));
+
+		// Page 객체 반환
+		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+	}
 }

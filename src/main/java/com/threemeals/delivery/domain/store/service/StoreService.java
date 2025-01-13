@@ -107,4 +107,8 @@ public class StoreService {
 		storeRepository.save(store);
 	}
 
+	public Page<StoreResponseDto> getAllStores(Pageable adjustedPageable) {
+		Page<Store> stores = storeRepository.findByIsClosedFalse(adjustedPageable);
+		return stores.map(StoreResponseDto::toDto);
+	}
 }
