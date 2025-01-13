@@ -1,6 +1,5 @@
 package com.threemeals.delivery.config;
 
-import com.threemeals.delivery.config.jwt.TokenProvider;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -14,8 +13,6 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-
-    private final TokenProvider tokenProvider;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -33,16 +30,6 @@ public class WebConfig implements WebMvcConfigurer {
         return ExceptionHandlerFilterRegisterBean;
     }
 
-    @Bean
-    FilterRegistrationBean jwtAuthenticationFilter() {
-        FilterRegistrationBean<Filter> jwtAuthFilterRegistrationBean = new FilterRegistrationBean<>();
 
-       // Register filter
-        jwtAuthFilterRegistrationBean.setFilter(new JwtAuthenticationFilter(tokenProvider));
-        jwtAuthFilterRegistrationBean.setOrder(2);
-        // Set filter working range
-        jwtAuthFilterRegistrationBean.addUrlPatterns("/*");
-        return jwtAuthFilterRegistrationBean;
-    }
 
 }

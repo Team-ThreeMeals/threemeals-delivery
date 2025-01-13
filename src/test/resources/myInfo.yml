@@ -1,0 +1,12 @@
+naver:
+  oauth:
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}
+    redirect-uri: http://localhost:8080/oauth/login/naver/callback
+db:
+  name: 3meals
+  user: sa
+  pw:
+redis:
+  host: ${REDIS_HOST:localhost}
+  port: ${REDIS_PORT:6310}
