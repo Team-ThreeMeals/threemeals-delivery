@@ -13,6 +13,8 @@
 - [⚙️ 개발 환경](#개발-환경)
 - [🎲 기능 목록](#기능-목록)
 - [🧩 핵심 기능](#핵심-기능)
+- [📕 ERD DIAGRAN](#erd-diagran)
+- [📄 API 명세서](#API-명세서)
 - [✍ Trouble Shooting](#trouble-shooting)
 
 ---
@@ -146,6 +148,11 @@
   - 주문 상태 업데이트 및 취소 가능.
 
 ---
+## 📕 ERD DIAGRAN
+<img src="https://github.com/user-attachments/assets/524d4501-4259-4a4e-8b29-8b41bd2720b4" width="500" height="1000">
+
+## 📄API 명세서
+[API 명세서 상세보기 ](https://www.notion.so/API-1751c81f481d80c7804adf8d172a0278?pvs=21)
 
 ## ✍ Trouble Shooting
 
