@@ -1,6 +1,6 @@
 <p align="center">
  <img width="100px" src="https://res.cloudinary.com/anuraghazra/image/upload/v1594908242/logo_ccswme.svg" align="center" alt="GitHub Readme Stats" />
-    <h2 align="center">[Daily] 삼시세끼민족</h2>
+    <h2 align="center">삼시세끼민족</h2>
 </p>
 <br/>
 
@@ -61,23 +61,7 @@
    <tr>
     <td align="center"><b><a href="https://github.com/kyung412820">이경훈</a></b></td>
   <tr>
-    <td align="center"><a href="https://github.com/kyung412820"><img src="https://avatars.githubusercontent.com/u/71320521?v=4" width="100px" /></a></td>
-  </tr>
-  <tr>
-    <td align="center"><b>팀원</b></td>
-</table>
-<table>
-   <tr>
-    <td align="center"><b><a href="https://github.com/duol9">이하영</a></b></td>
-  <tr>
-    <td align="center"><a href="https://github.com/duol9"><img src="https://avatars.githubusercontent.com/u/90500100?v=4" width="100px" /></a></td>
-  </tr>
-  <tr>
-    <td align="center"><b>팀원</b></td>
-</table>
-<table>
-   <tr>
-    <td align="center"><b><a href="https://github.com/dllll2">이진</a></b></td>
+    <td ali영</a></b></td>
   <tr>
     <td align="center"><a href="https://github.com/dllll2"><img src="https://avatars.githubusercontent.com/u/105922173?v=4" width="100px" /></a></td>
   </tr>
