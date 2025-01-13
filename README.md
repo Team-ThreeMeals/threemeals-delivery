@@ -40,49 +40,44 @@
 
 ## 👨‍👧‍👦 팀원
 <table>
-   <tr>
-    <td align="center"><b><a href="https://github.com/chk223">김창현</a></b></td>
   <tr>
-    <td align="center"><a href="https://github.com/chk223"><img src="https://avatars.githubusercontent.com/u/104356399?v=4" width="100px" /></a></td>
+    <!-- 김창현 -->
+    <td align="center">
+      <b><a href="https://github.com/chk223">김창현</a></b><br>
+      <a href="https://github.com/chk223">
+        <img src="https://avatars.githubusercontent.com/u/104356399?v=4" width="100px" />
+      </a><br>
+      <b>팀장</b>
+    </td>
+    <td align="center">
+      <b><a href="https://github.com/freedrawing">강성욱</a></b><br>
+      <a href="https://github.com/freedrawing">
+        <img src="https://avatars.githubusercontent.com/u/43941383?v=4" width="100px" />
+      </a><br>
+      <b>팀원</b>
+    </td>
+    <td align="center">
+      <b><a href="https://github.com/kyung412820">이경훈</a></b><br>
+      <a href="https://github.com/kyung412820">
+        <img src="https://avatars.githubusercontent.com/u/71320521?v=4" width="100px" />
+      </a><br>
+      <b>팀원</b>
+    </td>
+    <td align="center">
+      <b><a href="https://github.com/duol9">이하영</a></b><br>
+      <a href="https://github.com/duol9">
+        <img src="https://avatars.githubusercontent.com/u/90500100?v=4" width="100px" />
+      </a><br>
+      <b>팀원</b>
+    </td>
+    <td align="center">
+      <b><a href="https://github.com/dllll2">이진</a></b><br>
+      <a href="https://github.com/dllll2">
+        <img src="https://avatars.githubusercontent.com/u/105922173?v=4" width="100px" />
+      </a><br>
+      <b>팀원</b>
+    </td>
   </tr>
-  <tr>
-    <td align="center"><b>팀장</b></td>
-</table>
-<table>
-   <tr>
-    <td align="center"><b><a href="https://github.com/freedrawing">강성욱</a></b></td>
-  <tr>
-    <td align="center"><a href="https://github.com/freedrawing"><img src="https://avatars.githubusercontent.com/u/43941383?v=4" width="100px" /></a></td>
-  </tr>
-  <tr>
-    <td align="center"><b>팀원</b></td>
-</table>
-<table>
-   <tr>
-    <td align="center"><b><a href="https://github.com/kyung412820">이경훈</a></b></td>
-  <tr>
-    <td align="center"><a href="https://github.com/kyung412820"><img src="https://avatars.githubusercontent.com/u/71320521?v=4" width="100px" /></a></td>
-  </tr>
-  <tr>
-    <td align="center"><b>팀원</b></td>
-</table>
-<table>
-   <tr>
-    <td align="center"><b><a href="https://github.com/duol9">이하영</a></b></td>
-  <tr>
-    <td align="center"><a href="https://github.com/duol9"><img src="https://avatars.githubusercontent.com/u/90500100?v=4" width="100px" /></a></td>
-  </tr>
-  <tr>
-    <td align="center"><b>팀원</b></td>
-</table>
-<table>
-   <tr>
-    <td align="center"><b><a href="https://github.com/dllll2">이진</a></b></td>
-  <tr>
-    <td align="center"><a href="https://github.com/dllll2"><img src="https://avatars.githubusercontent.com/u/105922173?v=4" width="100px" /></a></td>
-  </tr>
-  <tr>
-    <td align="center"><b>팀원</b></td>
 </table>
 ---
 
