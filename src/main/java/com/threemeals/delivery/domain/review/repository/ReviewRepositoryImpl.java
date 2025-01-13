@@ -3,6 +3,7 @@ package com.threemeals.delivery.domain.review.repository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -50,14 +51,20 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
 			.collect(Collectors.groupingBy(
 				tuple -> tuple.get(review),
 				Collectors.mapping(
-					tuple -> new ReviewCommentResponseDto(
-						"사장님",
-						tuple.get(reviewComment).getContent(),
-						tuple.get(reviewComment).getCreatedAt().toLocalDate()
-					),
-					Collectors.toList()
+					tuple -> {
+						if (tuple.get(reviewComment) == null) {
+							return null;
+						}
+						return new ReviewCommentResponseDto(
+							"사장님",
+							Objects.requireNonNull(tuple.get(reviewComment)).getContent(),
+							Objects.requireNonNull(tuple.get(reviewComment)).getCreatedAt().toLocalDate()
+						);
+					},
+					Collectors.filtering(Objects::nonNull, Collectors.toList()) // null 값 제외
 				)
 			));
+
 
 		List<GetReviewResponseDto> reviews = joinComments.stream()
 			.map(tuple -> new GetReviewResponseDto(
