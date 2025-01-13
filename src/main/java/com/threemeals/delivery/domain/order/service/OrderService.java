@@ -5,13 +5,14 @@ import com.threemeals.delivery.domain.order.dto.request.UpdateOrderStatusRequest
 import com.threemeals.delivery.domain.order.dto.response.OrderDetailResponseDto;
 import com.threemeals.delivery.domain.order.dto.response.MessageResponse;
 import com.threemeals.delivery.domain.order.dto.response.OrderResponseDto;
+import com.threemeals.delivery.domain.order.entity.OrderStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface OrderService {
-    MessageResponse createOrder(Long userId, CreateOrderRequestDto requestDto);
     List<OrderResponseDto> getOrdersByUserId(Long userId);
     OrderDetailResponseDto getOrderDetail(Long orderId);
-    MessageResponse updateOrderStatus(Long orderId, UpdateOrderStatusRequestDto requestDto);
+    MessageResponse updateOrderStatus(Long userId, Long orderId, OrderStatus newStatus);
     MessageResponse cancelOrder(Long orderId);
 }

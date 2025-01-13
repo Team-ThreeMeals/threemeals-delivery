@@ -21,14 +21,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping
-    public ResponseEntity<MessageResponse> createOrder(
-            @Authentication UserPrincipal userPrincipal,
-            @RequestBody CreateOrderRequestDto requestDto) {
-        orderService.createOrder(userPrincipal.getUserId(), requestDto);
-        return ResponseEntity.status(201).body(new MessageResponse("Order placed successfully."));
-    }
-
     @GetMapping("/{userId}")
     public ResponseEntity<List<OrderResponseDto>> getUserOrders(@PathVariable Long userId) {
         List<OrderResponseDto> orders = orderService.getOrdersByUserId(userId);
@@ -45,10 +37,13 @@ public class OrderController {
     public ResponseEntity<MessageResponse> updateOrderStatus(
             @PathVariable Long orderId,
             @Authentication UserPrincipal userPrincipal,
+            @PathVariable Long orderId,
             @RequestBody UpdateOrderStatusRequestDto requestDto) {
-        orderService.updateOrderStatus(orderId, requestDto);
+        // Extract newStatus from requestDto and pass it
+        orderService.updateOrderStatus(userPrincipal.getUserId(), orderId, requestDto.getNewStatus());
         return ResponseEntity.ok(new MessageResponse("Order status updated successfully."));
     }
+
 
     @DeleteMapping("/{orderId}")
     public ResponseEntity<MessageResponse> cancelOrder(@PathVariable Long orderId) {
