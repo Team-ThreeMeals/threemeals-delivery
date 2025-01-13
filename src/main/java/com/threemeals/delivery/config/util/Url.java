@@ -9,8 +9,8 @@ public class Url {
     }
 
     public static final String[] WHITE_LIST = {
-        "/signup", "/signup/**", "/login", "/refresh-token"
-
+        "/signup", "/signup/**", "/login", "/users",
+        "/oauth/**","/*.ico", "/refresh-token"
     };
 
     public static boolean isIncludedInWhiteList(String requestUrl) {

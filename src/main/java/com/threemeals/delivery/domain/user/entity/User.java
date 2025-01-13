@@ -58,6 +58,11 @@ public class User extends BaseEntity {
 		isDeleted = false;
 	}
 
+	public void update(String username) {
+		validateIsDeleted();  // 삭제된 유저인지 먼저 체크
+		this.username = username;
+	}
+
 	public void validateIsDeleted() {
 		if (isDeleted) {
 			throw new DeletedUserException();
