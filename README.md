@@ -73,7 +73,7 @@
       <b>팀원</b>
     </td>
     <td align="center">
-      <b><a href="https://github.com/dllll2">이진</a></b><br>
+      <b><a href="https://github.com/dllll2">이진영</a></b><br>
       <a href="https://github.com/dllll2">
         <img src="https://avatars.githubusercontent.com/u/105922173?v=4" width="100px" />
       </a><br>
