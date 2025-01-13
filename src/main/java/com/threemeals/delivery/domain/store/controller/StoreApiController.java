@@ -1,6 +1,5 @@
 package com.threemeals.delivery.domain.store.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +24,8 @@ import com.threemeals.delivery.domain.user.annotation.StoreOwnerOnly;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @RestController
 @AllArgsConstructor
@@ -39,7 +40,7 @@ public class StoreApiController {
 		@Valid @RequestBody SaveStoreRequestDto requestDto,
 		@Authentication UserPrincipal userPrincipal
 	) {
-		log.info("가게 생성 시도, name={} tip ={}",requestDto.storeName(),requestDto.deliveryTip());
+		log.info("가게 생성 시도, name={} tip ={}", requestDto.storeName(), requestDto.deliveryTip());
 		Long userId = userPrincipal.getUserId();
 
 		StoreResponseDto responseDto = storeService.saveStore(requestDto, userId);
@@ -49,14 +50,22 @@ public class StoreApiController {
 	// 다건 조회 (가게명으로 검색)
 	@GetMapping
 	public ResponseEntity<Page<StoreResponseDto>> getStores(
-		@RequestParam String name,
+		@RequestParam(required = false) String name,
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "5") int size) {
 
 		// 시작 페이지를 1로
 		Pageable adjustedPageable = PageRequest.of(page - 1, size);
 
-		Page<StoreResponseDto> stores = storeService.getStoresByName(name, adjustedPageable);
+		Page<StoreResponseDto> stores;
+
+		if (name == null || name.isBlank()) {
+			// name이 없으면 전체 조회
+			stores = storeService.getAllStores(adjustedPageable);
+		} else {
+			// name이 있으면 가게명 검색
+			stores = storeService.getStoresByName(name, adjustedPageable);
+		}
 		return ResponseEntity.ok(stores);
 	}
 
